@@ -34,6 +34,20 @@
   .stars{background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;display:flex;align-items:center;gap:6px}
   .back{background:none;border:none;color:var(--muted);font-weight:800;font-size:1rem;padding:6px 0;margin-bottom:8px}
   .back:hover{color:var(--ink)}
+  .artdrei{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+  .artk{border:2px solid var(--ac);border-radius:16px;padding:12px 8px;text-align:center;background:color-mix(in srgb,var(--ac) 8%,#fff)}
+  .artw{font-size:1.8rem;font-weight:900;color:var(--ac)}
+  .artbsp{margin-top:8px;font-weight:700;line-height:1.6;cursor:pointer}
+  .arttricks{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:10px}
+  .artt{border-left:6px solid var(--ac);background:color-mix(in srgb,var(--ac) 7%,#fff);border-radius:12px;padding:10px 12px;line-height:1.6}
+  .artt>b:first-child{color:var(--ac);font-size:1.1rem}
+  @media (max-width:420px){.artw{font-size:1.4rem}.artk{padding:10px 4px;font-size:.92rem}}
+
+  #backFab{position:fixed;right:12px;top:50%;z-index:55;transform:translate(130%,-50%);transition:transform .25s ease;background:var(--ink,#2b2340);color:#fff;border:none;border-radius:999px;padding:12px 16px;font-weight:900;font-size:1rem;font-family:inherit;box-shadow:0 8px 22px rgba(43,35,64,.35);cursor:pointer;display:flex;align-items:center;gap:6px}
+  #backFab.zeigen{transform:translate(0,-50%)}
+  #backFab .pf{font-size:1.25rem;line-height:1}
+  @media (max-width:520px){#backFab .tx{display:none}#backFab{padding:12px 14px}}
+
   h1{font-size:1.9rem;margin:6px 0 4px;font-weight:900;letter-spacing:-.01em}
   h2{font-size:1.35rem;margin:0 0 10px;font-weight:900}
   .sub{color:var(--muted);margin:0 0 20px;font-weight:600}
@@ -119,7 +133,9 @@
   .fabN{position:fixed;left:16px;bottom:16px;z-index:40;background:linear-gradient(135deg,#0ea5e9,#22c55e);color:#fff;border:none;border-radius:999px;padding:12px 18px;font-weight:900;font-size:1rem;box-shadow:0 8px 24px rgba(14,165,233,.35);cursor:pointer;font-family:inherit}
   .overlay{position:fixed;inset:0;z-index:60;background:rgba(43,35,64,.45);display:flex;align-items:flex-end;justify-content:center;padding:12px}
   @media (min-width:700px){.overlay{align-items:center}}
-  .overlay .card{width:100%;max-width:640px;max-height:92vh;display:flex;flex-direction:column}
+  .overlay .card{width:100%;max-width:640px;max-height:92vh;max-height:calc(100dvh - 24px);display:flex;flex-direction:column;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+  .overlay .card>*{flex-shrink:0}
+  .overlay .card .chat{flex-shrink:1}
   .chat{display:flex;flex-direction:column;gap:10px;min-height:300px}
   .msgs{display:flex;flex-direction:column;gap:10px;max-height:55vh;overflow-y:auto;padding:4px}
   .msg{max-width:85%;padding:12px 14px;border-radius:18px;line-height:1.5;font-weight:600;white-space:pre-wrap;word-wrap:break-word}
@@ -2227,6 +2243,21 @@ function stopAlles(){ try{ tts&&tts.stop(); }catch(e){} try{ window.speechSynthe
 (function(){ if(!('speechSynthesis' in window)) return; let frei=false;
   const los=()=>{ if(frei) return; frei=true; try{ const u=new SpeechSynthesisUtterance(' '); u.volume=0; speechSynthesis.speak(u); }catch(e){} ['touchend','click'].forEach(ev=>document.removeEventListener(ev,los,true)); };
   ['touchend','click'].forEach(ev=>document.addEventListener(ev,los,true)); })();
+
+/* Schwebender Zurück-Knopf: erscheint rechts, sobald man nach unten scrollt */
+(function(){
+  const fab=document.createElement('button'); fab.id='backFab'; fab.type='button'; fab.setAttribute('aria-label','Zurück');
+  fab.innerHTML='<span class="pf">←</span><span class="tx">Zurück</span>';
+  document.body.appendChild(fab);
+  const ziel=()=>{ const ov=[...document.querySelectorAll('.overlay')].length; if(ov) return null; const a=document.getElementById('app'); return a?a.querySelector('.back'):null; };
+  let tick=false;
+  const pruefen=()=>{ tick=false; const b=ziel(); const an=!!b && window.scrollY>260; fab.classList.toggle('zeigen',an); };
+  addEventListener('scroll',()=>{ if(!tick){tick=true;requestAnimationFrame(pruefen);} },{passive:true});
+  addEventListener('resize',pruefen);
+  new MutationObserver(()=>{ if(!tick){tick=true;requestAnimationFrame(pruefen);} }).observe(document.body,{childList:true,subtree:false});
+  const a=document.getElementById('app'); if(a) new MutationObserver(()=>{ if(!tick){tick=true;requestAnimationFrame(pruefen);} }).observe(a,{childList:true});
+  fab.onclick=()=>{ const b=ziel(); fab.classList.remove('zeigen'); if(b) b.click(); };
+})();
 let SPRECH_BTN=null, SPRICHT=false, KLICK_BTN=null, KLICK_ZEIT=0;
 document.addEventListener('pointerdown',e=>{ KLICK_BTN=e.target.closest('button,[data-say],[data-a2],.say,.fchip'); KLICK_ZEIT=Date.now(); },true);
 document.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' '){ KLICK_BTN=e.target.closest&&e.target.closest('button'); KLICK_ZEIT=Date.now(); } },true);
@@ -2339,6 +2370,158 @@ function artTabelle(hi){
   const rows=[['1. Fall · Wer oder was?','der Hund','die Katze','das Pferd','die Hunde'],['2. Fall · Wessen?','des Hundes','der Katze','des Pferdes','der Hunde'],['3. Fall · Wem?','dem Hund','der Katze','dem Pferd','den Hunden'],['4. Fall · Wen oder was?','den Hund','die Katze','das Pferd','die Hunde']];
   return `<div class="ftab-wrap"><table class="ftab"><tr><th></th><th>männlich</th><th>weiblich</th><th>sächlich</th><th>Mehrzahl</th></tr>${rows.map((r,i)=>`<tr class="${hi===i+1?'hi':''}" style="${hi===i+1?'--fc:'+FAELLE[i].farbe:''}">${r.map((c,j)=>j?`<td>${c.replace(/^(\w+)/,'<b>$1</b>')}</td>`:`<th>${c}</th>`).join('')}</tr>`).join('')}</table></div>`;
 }
+
+/* ===== Artikel-Trainer: der, die, das & des, dem, den ===== */
+const ART_WOERTER=[
+ ['Hund','der','🐕'],['Baum','der','🌳'],['Tisch','der',''],['Stuhl','der','🪑'],['Apfel','der','🍎'],['Löffel','der','🥄'],['Schlüssel','der','🔑'],
+ ['Montag','der','📅'],['Freitag','der','📅'],['Jänner','der','🗓️'],['Juli','der','🗓️'],['Sommer','der','🏖️'],['Winter','der','⛄'],['Frühling','der','🌱'],
+ ['Lehrer','der','👨‍🏫'],['Computer','der','💻'],['Regen','der','🌧️'],['Schnee','der','❄️'],['Berg','der','⛰️'],['Mond','der','🌙'],['Käse','der','🧀'],
+ ['Schmetterling','der','🦋'],['Bleistift','der','✏️'],['Ball','der','⚽'],['Zug','der','🚆'],['Vogel','der','🐦'],['Fisch','der','🐟'],['Elefant','der','🐘'],
+ ['Löwe','der','🦁'],['Teller','der','🍽️'],['Rucksack','der','🎒'],['Kuchen','der','🍰'],['Hamster','der','🐹'],['Garten','der','🏡'],['Kühlschrank','der',''],
+ ['Katze','die','🐈'],['Blume','die','🌷'],['Sonne','die','☀️'],['Schule','die','🏫'],['Zeitung','die','📰'],['Rechnung','die','🧾'],['Freiheit','die','🕊️'],
+ ['Gesundheit','die','💪'],['Freundlichkeit','die','😊'],['Mannschaft','die','⚽'],['Freundschaft','die','🤝'],['Station','die','🚉'],['Bäckerei','die','🥐'],
+ ['Lehrerin','die','👩‍🏫'],['Freundin','die','👭'],['Banane','die','🍌'],['Tür','die','🚪'],['Uhr','die','⌚'],['Hand','die','✋'],['Maus','die','🐭'],
+ ['Kuh','die','🐄'],['Gabel','die','🍴'],['Brille','die','👓'],['Tasche','die','👜'],['Lampe','die','💡'],['Pizza','die','🍕'],['Milch','die','🥛'],
+ ['Nase','die','👃'],['Wolke','die','☁️'],['Erdbeere','die','🍓'],['Giraffe','die','🦒'],['Haustür','die','🚪'],
+ ['Haus','das','🏠'],['Auto','das','🚗'],['Buch','das','📖'],['Kind','das','🧒'],['Mädchen','das','👧'],['Kätzchen','das','🐱'],['Häschen','das','🐰'],
+ ['Büchlein','das','📘'],['Fahrrad','das','🚲'],['Pferd','das','🐴'],['Schaf','das','🐑'],['Ei','das','🥚'],['Brot','das','🍞'],['Handy','das','📱'],
+ ['Fenster','das','🪟'],['Bett','das','🛏️'],['Zimmer','das',''],['Wasser','das','💧'],['Eis','das','🍦'],['Herz','das','❤️'],['Flugzeug','das','✈️'],
+ ['Schwein','das','🐷'],['Museum','das','🏛️'],['Zentrum','das','🏙️'],['Instrument','das','🎻'],['Laufen','das','🏃'],['Schwimmen','das','🏊'],
+ ['Messer','das','🔪'],['Telefon','das','☎️'],['Papier','das','📄'],['Glas','das','🥛'],['Spielzeug','das','🧸'],['Kinderzimmer','das','🛏️']
+];
+function artTipp(w,g){
+  const W=w.toLowerCase();
+  if(/^(montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag)$/.test(W)) return '<b>Wochentage</b> sind immer <b>der</b>: der Montag, der Freitag …';
+  if(/^(jänner|januar|februar|feber|märz|april|mai|juni|juli|august|september|oktober|november|dezember)$/.test(W)) return '<b>Monate</b> sind immer <b>der</b>: der Jänner, der Juli …';
+  if(/^(frühling|sommer|herbst|winter)$/.test(W)) return '<b>Jahreszeiten</b> sind immer <b>der</b>: der Sommer, der Winter …';
+  if(/^(haustür|kinderzimmer|spielzeug|kühlschrank|bleistift|rucksack|flugzeug|fahrrad)$/.test(W)) return 'Bei <b>zusammengesetzten Wörtern</b> bestimmt das <b>letzte Wort</b> den Artikel: '+({haustür:'das Haus + <b>die</b> Tür = <b>die</b> Haustür',kinderzimmer:'das Kind + <b>das</b> Zimmer = <b>das</b> Kinderzimmer',spielzeug:'das Spiel + <b>das</b> Zeug = <b>das</b> Spielzeug',kühlschrank:'kühl + <b>der</b> Schrank = <b>der</b> Kühlschrank',bleistift:'das Blei + <b>der</b> Stift = <b>der</b> Bleistift',rucksack:'der Rücken + <b>der</b> Sack = <b>der</b> Rucksack',flugzeug:'der Flug + <b>das</b> Zeug = <b>das</b> Flugzeug',fahrrad:'fahren + <b>das</b> Rad = <b>das</b> Fahrrad'})[W];
+  if(/chen$/.test(W)) return 'Wörter auf <b>-chen</b> sind immer <b>das</b> – auch das Mädchen!';
+  if(/lein$/.test(W)) return 'Wörter auf <b>-lein</b> sind immer <b>das</b>: das Büchlein, das Fräulein.';
+  if(/(ung|heit|keit|schaft|ion|ei)$/.test(W)&&g==='die') return 'Wörter auf <b>-ung, -heit, -keit, -schaft, -ion, -ei</b> sind immer <b>die</b>.';
+  if(/in$/.test(W)&&g==='die') return 'Weibliche Personen auf <b>-in</b> sind <b>die</b>: die Lehrerin, die Freundin.';
+  if(/ling$/.test(W)) return 'Wörter auf <b>-ling</b> sind meistens <b>der</b>: der Schmetterling, der Frühling.';
+  if(/(um|ment)$/.test(W)&&g==='das') return 'Wörter auf <b>-um</b> und <b>-ment</b> sind meistens <b>das</b>: das Museum, das Instrument.';
+  if(/^(laufen|schwimmen|lesen|spielen)$/.test(W)) return 'Wird ein <b>Tunwort zum Namenwort</b>, ist es immer <b>das</b>: das Laufen, das Schwimmen.';
+  if(W==='lehrer') return 'Männliche Personen sind <b>der</b>: der Lehrer, der Arzt, der Opa.';
+  return 'Hier gibt es keine Regel – <b>merk dir das Wort immer zusammen mit dem Artikel</b>: '+g+' '+w+'.';
+}
+const ART_FALL=[
+ ['Ich gebe ___ Hund einen Knochen.','dem','Wem gebe ich einen Knochen? → 3. Fall. Der Hund ist männlich → dem Hund.'],
+ ['Ich sehe ___ Hund im Garten.','den','Wen sehe ich? → 4. Fall. Männlich → den Hund.'],
+ ['Das ist der Ball ___ Hundes.','des','Wessen Ball ist das? → 2. Fall. Männlich → des Hundes.'],
+ ['___ Hund bellt laut.','Der','Wer bellt? → 1. Fall. Männlich → der Hund.'],
+ ['Ich helfe ___ Lehrerin.','der','Wem helfe ich? → 3. Fall. Weiblich → der Lehrerin.'],
+ ['Ich frage ___ Lehrerin.','die','Wen frage ich? → 4. Fall. Weiblich → die Lehrerin.'],
+ ['Das ist die Tasche ___ Lehrerin.','der','Wessen Tasche? → 2. Fall. Weiblich → der Lehrerin.'],
+ ['Wir spielen mit ___ Kind.','dem','Nach „mit“ kommt immer der 3. Fall. Das Kind ist sächlich → mit dem Kind.'],
+ ['Ich lese ___ Buch.','das','Was lese ich? → 4. Fall. Sächlich bleibt es das → das Buch.'],
+ ['Die Seiten ___ Buches sind bunt.','des','Wessen Seiten? → 2. Fall. Sächlich → des Buches.'],
+ ['Der Opa schenkt ___ Kindern Bonbons.','den','Wem schenkt er etwas? → 3. Fall Mehrzahl → den Kindern (mit -n am Ende!).'],
+ ['Ich füttere ___ Katzen.','die','Wen füttere ich? → 4. Fall Mehrzahl → die Katzen.'],
+ ['Die Farbe ___ Autos ist rot.','des','Wessen Farbe? → 2. Fall. Sächlich → des Autos.'],
+ ['Wir fahren mit ___ Bus zur Schule.','dem','Nach „mit“ kommt der 3. Fall. Der Bus → mit dem Bus.'],
+ ['Lea ruft ___ Freund an.','den','Wen ruft Lea an? → 4. Fall. Männlich → den Freund.'],
+ ['Der Ball liegt unter ___ Tisch.','dem','WO liegt der Ball? Bei „Wo?“ nach unter, auf, in … kommt der 3. Fall → unter dem Tisch.'],
+ ['Ich lege das Heft auf ___ Tisch.','den','WOHIN lege ich das Heft? Bei „Wohin?“ kommt der 4. Fall → auf den Tisch.'],
+ ['Ich danke ___ Mutter.','der','Wem danke ich? → 3. Fall. Weiblich → der Mutter.'],
+ ['Paul besucht ___ Oma.','die','Wen besucht Paul? → 4. Fall. Weiblich → die Oma.'],
+ ['Ohne ___ Schlüssel komme ich nicht ins Haus.','den','Nach „ohne“ kommt immer der 4. Fall. Der Schlüssel → ohne den Schlüssel.'],
+ ['Das Geschenk ist für ___ Vater.','den','Nach „für“ kommt immer der 4. Fall → für den Vater.'],
+ ['Nach ___ Unterricht gehen wir heim.','dem','Nach „nach“ kommt immer der 3. Fall. Der Unterricht → nach dem Unterricht.'],
+ ['Das Fell ___ Pferdes glänzt.','des','Wessen Fell? → 2. Fall. Sächlich → des Pferdes.'],
+ ['___ Sonne scheint hell.','Die','Wer scheint? → 1. Fall. Weiblich → die Sonne.'],
+ ['Ich trinke ___ Saft.','den','Was trinke ich? → 4. Fall. Der Saft ist männlich → den Saft.'],
+ ['Ich gebe ___ Pferd einen Apfel.','dem','Wem gebe ich den Apfel? → 3. Fall. Sächlich → dem Pferd.'],
+ ['Die Kinder spielen in ___ Pause.','der','WO spielen sie? → 3. Fall. Weiblich → in der Pause.'],
+ ['___ Kinder lachen.','Die','Wer lacht? → 1. Fall Mehrzahl → die Kinder.']
+];
+const ART_EIN=[
+ ['Ich habe ___ Hund.','einen','Wen oder was habe ich? → 4. Fall. Männlich → einen Hund.'],
+ ['Ich wünsche mir ___ Fahrrad.','ein','Was wünsche ich mir? → 4. Fall. Sächlich bleibt es ein → ein Fahrrad.'],
+ ['Ich schreibe ___ Freundin einen Brief.','einer','Wem schreibe ich? → 3. Fall. Weiblich → einer Freundin.'],
+ ['Er hilft ___ Mann.','einem','Wem hilft er? → 3. Fall. Männlich → einem Mann.'],
+ ['Das ist die Jacke ___ Mädchens.','eines','Wessen Jacke? → 2. Fall. Sächlich → eines Mädchens.'],
+ ['Da sitzt ___ Katze.','eine','Wer sitzt da? → 1. Fall. Weiblich → eine Katze.'],
+ ['Ich kaufe ___ Banane.','eine','Was kaufe ich? → 4. Fall. Weiblich bleibt es eine → eine Banane.'],
+ ['Wir wohnen in ___ Haus.','einem','WO wohnen wir? → 3. Fall. Sächlich → in einem Haus.'],
+ ['___ Vogel singt.','Ein','Wer singt? → 1. Fall. Männlich → ein Vogel.'],
+ ['Sie spielt mit ___ Ball.','einem','Nach „mit“ kommt der 3. Fall → mit einem Ball.'],
+ ['Ich esse ___ Apfel.','einen','Was esse ich? → 4. Fall. Männlich → einen Apfel.'],
+ ['Der Hut ___ Zauberers ist blau.','eines','Wessen Hut? → 2. Fall. Männlich → eines Zauberers.'],
+ ['Ich gebe ___ Kind ein Eis.','einem','Wem gebe ich ein Eis? → 3. Fall. Sächlich → einem Kind.'],
+ ['Ich sehe ___ Flugzeug.','ein','Was sehe ich? → 4. Fall. Sächlich bleibt es ein → ein Flugzeug.'],
+ ['Wir warten auf ___ Bus.','einen','Worauf warten wir? „warten auf“ braucht den 4. Fall → auf einen Bus.'],
+ ['Der Schwanz ___ Katze ist lang.','einer','Wessen Schwanz? → 2. Fall. Weiblich → einer Katze.']
+];
+function artLueckeFrage([satz,richtig,erkl],pool){
+  const r=richtig, gross=/^[A-ZÄÖÜ]/.test(r);
+  let andere=shuffle(pool.filter(x=>x.toLowerCase()!==r.toLowerCase())).slice(0,3);
+  if(gross) andere=andere.map(x=>x[0].toUpperCase()+x.slice(1));
+  const o=[r,...andere];
+  return {q:satz,o,a:0,e:erkl};
+}
+function artGenusRunde(n){
+  return shuffle(ART_WOERTER.slice()).slice(0,n).map(([w,g,em])=>({q:`${em?em+' ':''}___ ${w}`,o:['der','die','das'],a:['der','die','das'].indexOf(g),fix:true,e:artTipp(w,g).replace(/<[^>]+>/g,'')}));
+}
+function artikelSeite(){
+  setColor('var(--deutsch)'); stopSprechen();
+  currentCtx={label:'Artikel: der, die, das',detail:'Sie lernt gerade die Artikel: der/die/das (Geschlecht der Nomen) und wie sich die Artikel in den 4 Fällen ändern (der, des, dem, den; ein, eines, einem, einen). Erkläre kindgerecht mit Beispielen.'};
+  const zeile=(a,b,c,d)=>`<tr><th>${a}</th><td>${b}</td><td>${c}</td><td>${d}</td></tr>`;
+  app.innerHTML=`<button class="back">← Zurück</button>
+   <h1>🎯 der, die, das – Artikel</h1><p class="sub">Erklärung, Tricks und Übungen. Tippe auf ein Wort, dann wird es vorgelesen.</p>
+   <div class="card">
+     <h2>1️⃣ Jedes Nomen hat einen Artikel</h2>
+     <p>Der <b>Artikel</b> (Begleiter) zeigt, ob ein Nomen <b>männlich</b>, <b>weiblich</b> oder <b>sächlich</b> ist:</p>
+     <div class="artdrei">
+       <div class="artk" style="--ac:#3b82f6"><div class="artw">der</div><div>männlich</div><div class="artbsp" ${say('der Hund, der Baum, der Ball')}>der Hund 🐕<br>der Baum 🌳<br>der Ball ⚽</div></div>
+       <div class="artk" style="--ac:#ec4899"><div class="artw">die</div><div>weiblich</div><div class="artbsp" ${say('die Katze, die Sonne, die Blume')}>die Katze 🐈<br>die Sonne ☀️<br>die Blume 🌷</div></div>
+       <div class="artk" style="--ac:#22c55e"><div class="artw">das</div><div>sächlich</div><div class="artbsp" ${say('das Haus, das Auto, das Buch')}>das Haus 🏠<br>das Auto 🚗<br>das Buch 📖</div></div>
+     </div>
+     <div class="learnbox" style="margin-top:12px">💡 In der <b>Mehrzahl</b> heißt es immer <b>die</b>: der Hund → <b>die</b> Hunde, das Haus → <b>die</b> Häuser.</div>
+     <div class="learnbox" style="margin-top:8px">⚠️ Das Geschlecht im Wort ist nicht immer logisch: <b>das</b> Mädchen ist ein Mädchen, aber trotzdem „das“. Darum: <b>Lerne jedes Nomen immer mit Artikel!</b></div>
+   </div>
+   <div class="card">
+     <h2>2️⃣ Tricks: Daran erkennst du den Artikel</h2>
+     <div class="arttricks">
+       <div class="artt" style="--ac:#3b82f6"><b>immer der</b><br>Wochentage (der Montag)<br>Monate (der Juli)<br>Jahreszeiten (der Sommer)<br>meist auf <b>-ling</b> (der Schmetterling)<br>männliche Personen (der Opa)</div>
+       <div class="artt" style="--ac:#ec4899"><b>immer die</b><br>Endungen <b>-ung</b> (die Zeitung)<br><b>-heit</b> (die Freiheit), <b>-keit</b> (die Freundlichkeit)<br><b>-schaft</b> (die Mannschaft), <b>-ion</b> (die Station)<br><b>-ei</b> (die Bäckerei), <b>-in</b> (die Lehrerin)</div>
+       <div class="artt" style="--ac:#22c55e"><b>immer das</b><br>Endungen <b>-chen</b> (das Mädchen)<br><b>-lein</b> (das Büchlein)<br>meist <b>-um, -ment</b> (das Museum, das Instrument)<br>Tunwörter als Nomen (das Laufen)</div>
+     </div>
+     <div class="learnbox" style="margin-top:12px">🧩 <b>Zusammengesetzte Wörter:</b> Das <b>letzte</b> Wort bestimmt den Artikel.<br>das Haus + die Tür = <b>die</b> Haustür · die Kinder + das Zimmer = <b>das</b> Kinderzimmer</div>
+   </div>
+   <div class="card">
+     <h2>3️⃣ Der Artikel ändert sich in den 4 Fällen</h2>
+     <p>Je nachdem, wie du fragst, bekommt das Nomen einen anderen Artikel. Am meisten ändert sich der <b>männliche</b> Artikel: <b ${say('der, des, dem, den')} class="say">der – des – dem – den 🔊</b></p>
+     ${artTabelle(0)}
+     <h2 style="margin-top:16px">Mit ein / eine</h2>
+     <div class="ftab-wrap"><table class="ftab"><tr><th></th><th>männlich</th><th>weiblich</th><th>sächlich</th></tr>
+       ${zeile('1. Fall · Wer?','<b>ein</b> Hund','<b>eine</b> Katze','<b>ein</b> Pferd')}
+       ${zeile('2. Fall · Wessen?','<b>eines</b> Hundes','<b>einer</b> Katze','<b>eines</b> Pferdes')}
+       ${zeile('3. Fall · Wem?','<b>einem</b> Hund','<b>einer</b> Katze','<b>einem</b> Pferd')}
+       ${zeile('4. Fall · Wen?','<b>einen</b> Hund','<b>eine</b> Katze','<b>ein</b> Pferd')}
+     </table></div>
+     <div class="learnbox" style="margin-top:12px">🧠 <b>Merktrick:</b> Wem? → de<b>m</b> (beide mit <b>m</b>) · Wen? → de<b>n</b> (beide mit <b>n</b>)</div>
+     <div class="learnbox" style="margin-top:8px">📌 Nach <b>mit, nach, bei, von, zu, aus, seit</b> → immer <b>3. Fall</b> (mit dem Bus).<br>Nach <b>für, ohne, durch, gegen, um</b> → immer <b>4. Fall</b> (für den Papa).<br>Bei <b>in, auf, unter …</b>: Frage „Wo?“ → 3. Fall (im Garten) · „Wohin?“ → 4. Fall (in den Garten).</div>
+   </div>
+   <div class="card">
+     <h2>✏️ Jetzt üben</h2>
+     <div class="opts" style="grid-template-columns:1fr">
+       <button class="opt" id="u1">🎯 der, die oder das? <small style="display:block;font-weight:600;color:var(--muted)">12 Wörter · jedes Mal andere</small></button>
+       <button class="opt" id="u2">🧩 des, dem oder den? <small style="display:block;font-weight:600;color:var(--muted)">10 Lückensätze mit der, die, das, des, dem, den</small></button>
+       <button class="opt" id="u3">🍀 ein, einen oder einem? <small style="display:block;font-weight:600;color:var(--muted)">10 Lückensätze mit ein, eine, eines, einem, einen, einer</small></button>
+       <button class="opt" id="u4">🏆 Großer Artikel-Test <small style="display:block;font-weight:600;color:var(--muted)">15 gemischte Aufgaben</small></button>
+     </div>
+   </div>`;
+  app.querySelector('.back').onclick=()=>{stopSprechen();openSubject('deutsch');};
+  const FALLPOOL=['der','die','das','des','dem','den'], EINPOOL=['ein','eine','eines','einem','einen','einer'];
+  const runde=(id,title,qs)=>mcRun({id,title,back:artikelSeite,aiTopic:{k:'deutsch',topic:'Artikel der/die/das und die 4 Fälle'},questions:qs});
+  document.getElementById('u1').onclick=()=>runde('art-genus','der, die oder das?',artGenusRunde(12));
+  document.getElementById('u2').onclick=()=>runde('art-fall','des, dem oder den?',shuffle(ART_FALL.slice()).slice(0,10).map(x=>artLueckeFrage(x,FALLPOOL)));
+  document.getElementById('u3').onclick=()=>runde('art-ein','ein, einen oder einem?',shuffle(ART_EIN.slice()).slice(0,10).map(x=>artLueckeFrage(x,EINPOOL)));
+  document.getElementById('u4').onclick=()=>runde('art-test','Großer Artikel-Test',shuffle([...artGenusRunde(5),...shuffle(ART_FALL.slice()).slice(0,6).map(x=>artLueckeFrage(x,FALLPOOL)),...shuffle(ART_EIN.slice()).slice(0,4).map(x=>artLueckeFrage(x,EINPOOL))]));
+  scrollTo(0,0);
+}
+
 function linkBtns(){ return FAELLE_LINKS.map(([t,u])=>`<a class="btn ghost plink" href="${u}" target="_blank" rel="noopener">${t}</a>`).join(''); }
 
 function fallSeite(i){
@@ -5396,6 +5579,8 @@ function openSubject(k){
       {id:'x-mediathek',em:'🏛️',name:'Mediathek Salzburg – E-Books ausleihen',small:'Kostenlos mit dem Leseausweis einer Bibliothek im Land Salzburg · auch als Onleihe-App',go:()=>window.open('https://mediathek-salzburg.onleihe.com','_blank'),nobadge:true,link:'https://mediathek-salzburg.onleihe.com'},
       {id:'x-vorlesen',em:'📗',name:'einfach vorlesen! – jede Woche neue Geschichten',small:'Kostenlos, eher für jüngere Kinder – gut zum Vorlesen für Geschwister',go:()=>{},nobadge:true,link:'https://www.einfachvorlesen.de'}];
   else if(k==='deutsch') items=[{header:'🎧 Diktat'},{id:'dk-menue',em:'🎧',name:'Diktat üben',small:'Die App liest vor, du schreibst mit · Fehler werden genau gezeigt',go:diktatMenue,nobadge:true},
+      {header:'🎯 Artikel: der, die, das'},
+      {id:'art-seite',em:'🎯',name:'der, die, das – Artikel lernen',small:'Erklärung, Tricks & Übungen · auch des, dem, den und ein, einem, einen',go:artikelSeite,nobadge:true},
       {header:'🧩 Die 4 Fälle – Schritt für Schritt'},
       {id:'f-show',em:'🎬',name:'Erklär-Show: Die 4 Fälle',small:'Animiert & vorgelesen – wie ein kleines Video',go:faelleShow,nobadge:true},
       ...FAELLE.map((F,i)=>({id:'fall-'+F.n,em:['1️⃣','2️⃣','3️⃣','4️⃣'][i],name:`${F.n}. Fall · ${F.name} (${F.spitz})`,small:`Frage: ${F.frage} · Erklärung, Beispiele & Übungen`,go:()=>fallSeite(i)})),
@@ -5429,7 +5614,7 @@ function openSubject(k){
 /* Allgemeiner Multiple-Choice-Ablauf */
 function mcRun({id,title,questions,back,learn,aiTopic}){
   let i=0,score=0;
-  const qs=questions.map(q=>{const order=shuffle(q.o.map((t,idx)=>({t,idx})));return{...q,order};});
+  const qs=questions.map(q=>{const base=q.o.map((t,idx)=>({t,idx}));const order=q.fix?base:shuffle(base);return{...q,order};});
   function show(){
     if(i>=qs.length) return finish(id,score,qs.length,back,()=>mcRun({id,title,questions,back,learn,aiTopic}),aiTopic);
     const q=qs[i];
