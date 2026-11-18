@@ -34,6 +34,7 @@
   .stars{background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:800;display:flex;align-items:center;gap:6px}
   .back{background:none;border:none;color:var(--muted);font-weight:800;font-size:1rem;padding:6px 0;margin-bottom:8px}
   .back:hover{color:var(--ink)}
+  html.modul #klasseBox{display:none}
   .artdrei{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
   .artk{border:2px solid var(--ac);border-radius:16px;padding:12px 8px;text-align:center;background:color-mix(in srgb,var(--ac) 8%,#fff)}
   .artw{font-size:1.8rem;font-weight:900;color:var(--ac)}
@@ -315,9 +316,12 @@
 
 <script>
 /* ---------- Speicher (nur in diesem Browser) ---------- */
+/* Modul-Modus: Einzelne Bereiche (Globus, Bilder-Lexikon, Bücher, Wortschatz, Artikel) für die App der 4. Klasse */
+const MODUL=(()=>{try{const p=new URLSearchParams(location.search);const m=p.get('modul');if(!m)return null;return {m,kind:(p.get('kind')||'').replace(/[^\w-]/g,'').slice(0,24),zurueck:'vs4/'};}catch(e){return null;}})();
+const LSP='lernapp_'+(MODUL?'vs4'+MODUL.kind+'_':'');
 const store = {
-  get(k, d){ try{ const v = localStorage.getItem('lernapp_'+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
-  set(k, v){ try{ localStorage.setItem('lernapp_'+k, JSON.stringify(v)); localStorage.setItem('lernapp__t_'+k, String(Date.now())); }catch(e){} SYNC.queue(k); }
+  get(k, d){ try{ const v = localStorage.getItem(LSP+k); return v===null?d:JSON.parse(v);}catch(e){return d;} },
+  set(k, v){ try{ localStorage.setItem(LSP+k, JSON.stringify(v)); localStorage.setItem(LSP+'_t_'+k, String(Date.now())); }catch(e){} SYNC.queue(k); }
 };
 /* ---------- Geräteübergreifend speichern (mit dem Claude-Konto) ---------- */
 const SYNC=(()=>{
@@ -327,7 +331,7 @@ const SYNC=(()=>{
   const setIcon=(t,title)=>{const el=document.getElementById('syncIco'); if(el){el.textContent=t; el.title=title;}};
   async function push(k){
     if(!col) return; if(busy[k]){again[k]=true;return;} busy[k]=true;
-    try{ const v=localStorage.getItem('lernapp_'+k); const t=+(localStorage.getItem('lernapp__t_'+k)||Date.now());
+    try{ const v=localStorage.getItem(LSP+k); const t=+(localStorage.getItem(LSP+'_t_'+k)||Date.now());
       if(v===null) await col.doc(docId(k)).delete(); else await col.doc(docId(k)).set({k,v,t});
       setIcon('☁️','Gespeichert – auch auf deinen anderen Geräten'); }
     catch(e){ if(e&&e.code==='invalid_argument'){col=null;} setIcon('💾','Nur auf diesem Gerät gespeichert'); }
@@ -342,20 +346,20 @@ const SYNC=(()=>{
       setIcon('🔄','Wird abgeglichen …');
       const snap=await col.get(); let changed=false; const remote={};
       snap.docs.forEach(d=>{ const x=d.data(); if(!x||typeof x.k!=='string'||typeof x.v!=='string') return; remote[x.k]=x.t||0;
-        const lt=+(localStorage.getItem('lernapp__t_'+x.k)||0);
-        if((x.t||0)>lt){ try{ localStorage.setItem('lernapp_'+x.k,x.v); localStorage.setItem('lernapp__t_'+x.k,String(x.t||0)); changed=true; }catch(e){} } });
+        const lt=+(localStorage.getItem(LSP+'_t_'+x.k)||0);
+        if((x.t||0)>lt){ try{ localStorage.setItem(LSP+x.k,x.v); localStorage.setItem(LSP+'_t_'+x.k,String(x.t||0)); changed=true; }catch(e){} } });
       ready=true;
-      for(let i=0;i<localStorage.length;i++){ const key=localStorage.key(i); if(!key||!key.startsWith('lernapp_')||key.startsWith('lernapp__t_')) continue;
-        const k=key.slice(8); if(!syncbar(k)) continue; const lt=+(localStorage.getItem('lernapp__t_'+k)||0);
-        if(!(k in remote) || lt>remote[k]){ if(!lt) localStorage.setItem('lernapp__t_'+k,String(Date.now())); queue(k); } }
+      for(let i=0;i<localStorage.length;i++){ const key=localStorage.key(i); if(!key||!key.startsWith(LSP)||key.startsWith(LSP+'_t_')) continue;
+        const k=key.slice(LSP.length); if(!syncbar(k)) continue; const lt=+(localStorage.getItem(LSP+'_t_'+k)||0);
+        if(!(k in remote) || lt>remote[k]){ if(!lt) localStorage.setItem(LSP+'_t_'+k,String(Date.now())); queue(k); } }
       setIcon('☁️','Gespeichert – auch auf deinen anderen Geräten');
       if(changed) reloadState(); else if(app._back===home) home();
     }catch(e){ setIcon('💾','Nur auf diesem Gerät gespeichert'); if(app._back===home) home(); }
   }
   async function pull(){
     if(!col) return; try{ const snap=await col.get(); let changed=false;
-      snap.docs.forEach(d=>{ const x=d.data(); if(!x||typeof x.k!=='string'||typeof x.v!=='string') return; const lt=+(localStorage.getItem('lernapp__t_'+x.k)||0);
-        if((x.t||0)>lt){ try{ localStorage.setItem('lernapp_'+x.k,x.v); localStorage.setItem('lernapp__t_'+x.k,String(x.t||0)); changed=true; }catch(e){} } });
+      snap.docs.forEach(d=>{ const x=d.data(); if(!x||typeof x.k!=='string'||typeof x.v!=='string') return; const lt=+(localStorage.getItem(LSP+'_t_'+x.k)||0);
+        if((x.t||0)>lt){ try{ localStorage.setItem(LSP+x.k,x.v); localStorage.setItem(LSP+'_t_'+x.k,String(x.t||0)); changed=true; }catch(e){} } });
       if(changed) reloadState(); }catch(e){}
   }
   function flush(){ Object.keys(timers).forEach(k=>{ clearTimeout(timers[k]); delete timers[k]; push(k); }); }
@@ -377,7 +381,7 @@ document.getElementById('starCount').textContent = stars;
 
 /* ---------- KLASSE ---------- */
 let KLASSE=store.get('klasse',1);
-const KL=()=>`${KLASSE}. Klasse Mittelschule in Österreich (${KLASSE+4}. Schulstufe`;
+const KL=()=>MODUL?'4. Klasse Volksschule in Österreich (4. Schulstufe':`${KLASSE}. Klasse Mittelschule in Österreich (${KLASSE+4}. Schulstufe`;
 
 /* ---------- LERN-PROTOKOLL (für Erwachsenen-Bereich & Abzeichen) ---------- */
 const heute=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
@@ -3606,7 +3610,7 @@ function backupCode(){
 }
 function backupLaden(code){
   try{ const j=JSON.parse(decodeURIComponent(escape(atob(code.replace(/^LERNAPP1:/,'').replace(/\s/g,''))))); if(j.app!=='lernapp'||!j.daten) return 0;
-    let n=0; Object.entries(j.daten).forEach(([k,v])=>{ if(typeof v!=='string') return; localStorage.setItem('lernapp_'+k,v); localStorage.setItem('lernapp__t_'+k,String(Date.now())); SYNC.queue(k); n++; }); return n; }catch(e){ return 0; }
+    let n=0; Object.entries(j.daten).forEach(([k,v])=>{ if(typeof v!=='string') return; localStorage.setItem(LSP+k,v); localStorage.setItem(LSP+'_t_'+k,String(Date.now())); SYNC.queue(k); n++; }); return n; }catch(e){ return 0; }
 }
 function klasseSetzen(k){ KLASSE=k; store.set('klasse',k); document.title='Meine Lern-App – '+k+'. Klasse'; const f=document.querySelector('footer'); if(f&&f.firstChild) f.firstChild.textContent=k+'. Klasse Mittelschule · Viel Spaß beim Lernen! 🌟'; }
 
@@ -5808,7 +5812,7 @@ let ai=null, currentCtx=null, chatMsgs=[], chatBusy=false, chatAbort=null;
 const fab=document.getElementById('fab');
 fab.onclick=()=>openChat(currentCtx);
 
-const EULE_REGELN=`Du bist die „Lern-Eule“, eine freundliche Lernhilfe in einer Schul-App für ein 11-jähriges Mädchen in der 1. Klasse Mittelschule in Österreich (5. Schulstufe, Bundesland Salzburg).
+const EULE_REGELN=`Du bist die „Lern-Eule“, eine freundliche Lernhilfe in einer Schul-App für ${MODUL?'ein Kind (9–10 Jahre) in der 4. Klasse Volksschule in Österreich (4. Schulstufe, Bundesland Salzburg). Erkläre besonders einfach, mit kurzen Sätzen.':'ein 11-jähriges Mädchen in der 1. Klasse Mittelschule in Österreich (5. Schulstufe, Bundesland Salzburg).'}
 Regeln:
 - Antworte immer auf Deutsch (österreichische Begriffe wie „Jause“, „Hausübung“, „Federpennal“ sind gut), außer sie fragt etwas zu Englisch.
 - Schreib kurz, einfach und kindgerecht wie in einem Kinderbuch – nicht wie Wikipedia oder ein Lexikon: höchstens 6–8 kurze Sätze, keine Fremdwörter, gern ein passendes Emoji. Keine Tabellen, kein Markdown mit # oder **.
@@ -6032,7 +6036,15 @@ document.getElementById('credLink').onclick=e=>{e.preventDefault();bildnachweise
   const _fs=fallSeite; fallSeite=function(){ AKT_FACH='deutsch'; return _fs.apply(this,arguments); };
   const _hm=home; home=function(){ AKT_FACH=null; return _hm(); }; }
 document.getElementById('fabN').onclick=()=>notizEditor({});
-home();
+if(MODUL){
+  const zur=()=>{ try{stopSprechen();}catch(e){} location.href=MODUL.zurueck; };
+  const ERLAUBT={buecher:['lesen']}; const _os2=openSubject;
+  openSubject=function(k){ if((ERLAUBT[MODUL.m]||[]).includes(k)) return _os2(k); zur(); };
+  home=function(){ zur(); };
+  document.documentElement.classList.add('modul');
+  const START={globus:()=>globeView(),lexikon:()=>bilderLexikon(),bilderquiz:()=>bilderQuiz(),buecher:()=>_os2('lesen'),wortschatz:()=>wortschatzMenue(),artikel:()=>artikelSeite()};
+  (START[MODUL.m]||zur)();
+} else home();
 </script>
 <script>setTimeout(()=>SYNC.start(),400); try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist();}catch(e){} klasseSetzen(KLASSE);</script>
 <script>if('serviceWorker' in navigator){ window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }</script>

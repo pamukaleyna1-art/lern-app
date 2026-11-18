@@ -13,6 +13,8 @@ let KIND=LS.get('aktiv',null);
 const store={get:(k,d)=>LS.get((KIND||'x')+'_'+k,d),set:(k,v)=>LS.set((KIND||'x')+'_'+k,v)};
 function kinder(){return LS.get('kinder',[]);}
 function kindInfo(){return kinder().find(k=>k.id===KIND)||null;}
+const KLEIN=()=>!!(kindInfo()&&kindInfo().klein);
+const modul=m=>{stopp();location.href='../index.html?modul='+m+'&kind='+encodeURIComponent(KIND||'');};
 
 /* Sterne */
 function sterne(){return store.get('sterne',0);}
@@ -83,15 +85,20 @@ function mcRunde({id,titel,fragen,back,lang,nachher}){
 
 /* Eingabe-Runde (Zahlen) */
 function zahlRunde({id,titel,gen,anzahl=10,back}){
+  if(KLEIN()) anzahl=Math.min(anzahl,6);
   let i=0,score=0;
   function show(){
     if(i>=anzahl) return ende(id,score,anzahl,back,()=>zahlRunde({id,titel,gen,anzahl,back}));
     const t=gen(); let versuch=0;
     KONTEXT=`Rechenübung „${titel}“: ${t.q} (Ergebnis ${t.a} – nicht verraten, Rechenweg in kleinen Schritten erklären)`;
     seite(`<div class="card"><div class="progress"><div style="width:${i/anzahl*100}%"></div></div><div class="meta"><span>${esc(titel)}</span><span>Aufgabe ${i+1} von ${anzahl}</span></div>
-      ${t.bild||''}<div class="q">${esc(t.q)}${spk(t.sag||t.q)}</div><div id="zb"></div><div class="fb"></div>
+      ${t.bild||''}<div class="q">${esc(t.q)}${spk(t.sag||t.q)}</div><div id="zb"></div><div class="fb"></div><div id="hl"></div>
+      <div class="row" style="justify-content:center">${t.tipp?'<button class="btn soft" id="hb">🙋 Ich brauche Hilfe</button>':''}${KI?'<button class="btn ghost" id="eb">🦉 Erklär es mir</button>':''}</div>
       <div class="row" id="wr" style="display:none"><button class="btn" id="weiter">Weiter →</button></div></div>`,back);
     const fb=app.querySelector('.fb');
+    const hilfe=()=>{const h=$('#hl');if(h&&!h.innerHTML)h.innerHTML=`<div class="help">🙋 ${t.tipp}</div>`;};
+    if($('#hb'))$('#hb').onclick=hilfe; if($('#eb'))$('#eb').onclick=()=>eule('Kannst du mir bei dieser Aufgabe helfen? '+t.q);
+    if(KLEIN()&&t.tipp) hilfe();
     const zb=ziffernblock($('#zb'),{max:9,onOk:v=>{
       if(v===t.a){ if(versuch===0){score++;addSterne(1);} fb.className='fb ok';fb.innerHTML=pick(LOB)+(t.e?`<div class="ex">💡 ${t.e}</div>`:'');$('#zb').style.pointerEvents='none';$('#wr').style.display='flex';$('#weiter').onclick=()=>{i++;show();};}
       else{versuch++; if(versuch<2){fb.className='fb no';fb.innerHTML='Noch nicht ganz – probier es noch einmal! 💪'+(t.tipp?`<div class="ex">💡 Tipp: ${t.tipp}</div>`:'');zb.reset();}
