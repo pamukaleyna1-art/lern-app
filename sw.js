@@ -5,6 +5,7 @@ self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise
 self.addEventListener('fetch',e=>{
   const r=e.request; if(r.method!=='GET') return;
   const u=new URL(r.url);
+  if(/\/vs4\//.test(u.pathname)) return; // eigene App der 4. Klasse hat ihren eigenen Speicher
   // App-Seite: zuerst online (für Updates), sonst aus dem Speicher
   if(r.mode==='navigate'||/\/(index\.html|config\.js|ki\.js)$/.test(u.pathname)){ e.respondWith(fetch(r).then(res=>{ const k=res.clone(); caches.open(CACHE).then(c=>c.put(r.mode==='navigate'?'index.html':r,k)); return res; }).catch(()=>caches.match(r.mode==='navigate'?'index.html':r))); return; }
   // Alles andere: aus dem Speicher, sonst laden und merken

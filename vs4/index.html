@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="de-AT">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lern-App – 4. Klasse</title>
+<meta name="theme-color" content="#0ea5a4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lern-App 4">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="../icons/icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <button class="logo" id="homeBtn" aria-label="Startseite"><span class="logoi">🦉</span><span>Lern-App</span></button>
+  <div class="topr"><button class="kid" id="kidBtn" title="Kind wechseln"></button><div class="stars" id="stars">⭐ 0</div></div>
+</header>
+<main id="app"></main>
+<button id="eulenBtn" class="eulenbtn" hidden>🦉 Frag die Lern-Eule</button>
+<button id="backFab" aria-label="Zurück"><span>←</span></button>
+<script src="../config.js"></script>
+<script src="../ki.js"></script>
+<script src="kern.js"></script>
+<script src="rechnen.js"></script>
+<script src="inhalt.js"></script>
+<script src="start.js"></script>
+<script>if('serviceWorker' in navigator){ addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(()=>{})); }</script>
+</body>
+</html>
