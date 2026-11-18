@@ -2853,6 +2853,25 @@ QUIZ.digital=[
 
 
 /* ---------- DIKTAT ---------- */
+/* Leichtere Diktate für die 4. Klasse Volksschule (Modul-Modus) */
+const DIKTATE_VS4=[
+ {id:'dv-gross',em:'🔠',name:'Groß oder klein?',regel:'<b>Nomen</b> (Namenwörter) schreibt man <b>groß</b>: der Hund, die Schule. Am <b>Satzanfang</b> schreibt man auch groß.',
+  s:['Der Hund spielt im Garten.','Meine Oma backt einen Kuchen.','Am Montag gehen wir in die Schule.','Die Katze schläft auf dem Sofa.','Im Winter fällt viel Schnee.']},
+ {id:'dv-ie',em:'🎯',name:'Wörter mit ie',regel:'Hörst du ein <b>langes i</b>, schreibst du meistens <b>ie</b>: die Biene, spielen, lieb.',
+  s:['Die Biene fliegt zur Wiese.','Wir spielen mit dem Ball.','Mein Bruder ist sehr lieb.','Die Kinder singen ein Lied.','Ich schreibe einen Brief.']},
+ {id:'dv-doppel',em:'✌️',name:'Doppelte Mitlaute',regel:'Nach einem <b>kurzen</b> Selbstlaut kommen oft <b>zwei gleiche</b> Mitlaute: Sonne, Ball, Mutter, Himmel.',
+  s:['Die Sonne scheint hell.','Der Ball rollt ins Wasser.','Die Mutter kommt bald.','Am Himmel sind viele Wolken.','Wir essen am Abend gemeinsam.']},
+ {id:'dv-ck',em:'🐱',name:'ck und tz',regel:'Nach einem <b>kurzen</b> Selbstlaut schreibt man <b>ck</b> statt kk und <b>tz</b> statt zz: Zucker, backen, Katze, Platz.',
+  s:['Die Katze sitzt auf dem Platz.','Wir backen einen Kuchen mit Zucker.','Der Hund hat eine dicke Decke.','Die Schnecke kriecht ganz langsam.','Ich putze meine Zähne.']},
+ {id:'dv-dehn',em:'🐄',name:'Wörter mit h',regel:'Manche Wörter mit <b>langem</b> Selbstlaut haben ein <b>h</b> als Dehnungszeichen: fahren, Uhr, Kuh, Zahl. Diese Wörter musst du dir merken.',
+  s:['Wir fahren mit dem Zug.','Die Kuh steht auf der Wiese.','Wie viel Uhr ist es?','Ich wohne in einem großen Haus.','Mein Lehrer ist sehr nett.']},
+ {id:'dv-ss',em:'🌊',name:'s, ss oder ß',regel:'Nach einem <b>kurzen</b> Selbstlaut: <b>ss</b> (Wasser, Fluss). Nach einem <b>langen</b> Selbstlaut: <b>ß</b> (Straße, Fuß, groß).',
+  s:['Das Wasser im Fluss ist kalt.','Der große Hund läuft schnell.','Ich habe kalte Füße.','Wir müssen leise sein.','Die Straße ist nass.']},
+ {id:'dv-ae',em:'🌳',name:'ä und äu',regel:'<b>Ableiten</b> hilft: Bäume kommt von Baum, Äpfel von Apfel, er läuft von laufen. Darum schreibt man <b>ä</b> oder <b>äu</b>.',
+  s:['Im Garten stehen viele Bäume.','Ich esse gerne Äpfel.','Der Hund läuft über die Wiese.','Die Mäuse wohnen im Keller.','Die Blätter sind schon gelb.']},
+ {id:'dv-herbst',em:'🍂',name:'Gemischt: Im Herbst',regel:'Achte auf <b>Großschreibung</b>, <b>ie</b> und <b>doppelte Mitlaute</b>.',
+  s:['Im Herbst werden die Blätter bunt.','Der Wind bläst kräftig.','Wir sammeln Kastanien im Park.','Die Vögel fliegen in den Süden.','Am Abend trinken wir heißen Tee.']}
+];
 const DIKTATE=[
  {id:'dk-ss',em:'🌊',name:'s, ss oder ß?',regel:'Nach einem <b>kurzen</b> Selbstlaut schreibt man <b>ss</b> (Fluss, essen). Nach einem <b>langen</b> Selbstlaut oder nach au/ei/eu schreibt man <b>ß</b> (Straße, heiß, groß).',
   s:['Im Sommer schwimmen wir gern im Fluss.','Die Straße vor unserem Haus ist sehr heiß.','Mein Bruder isst am liebsten Nudeln.','Der große Hund läuft schnell über die Wiese.','Wir müssen leise sein, denn das Baby schläft.','Vergiss bitte nicht, die Tür zu schließen!']},
@@ -2888,10 +2907,10 @@ function diktatMenue(){
   setColor(SUBJECTS.deutsch.color);
   app.innerHTML=`<button class="back">← Zurück</button><h1>🎧 Diktat üben</h1>
    <p class="sub">Die App liest dir Satz für Satz vor. Du schreibst mit – danach siehst du genau, welche Wörter schon stimmen.${kannSprechen()?'':' <b>Hinweis:</b> Auf diesem Gerät gibt es keine Vorlese-Stimme. Dann wird der Satz kurz gezeigt und verschwindet – merk ihn dir gut!'}</p>
-   <div class="list">${DIKTATE.map((d,i)=>`<button class="item" data-i="${i}"><span class="em">${d.em}</span><span>${esc(d.name)}<small>${d.s.length} Sätze · mit Regel zum Merken</small></span>${badge(d.id)}</button>`).join('')}
+   <div class="list">${(MODUL?DIKTATE_VS4:DIKTATE).map((d,i)=>`<button class="item" data-i="${i}"><span class="em">${d.em}</span><span>${esc(d.name)}<small>${d.s.length} Sätze · mit Regel zum Merken</small></span>${badge(d.id)}</button>`).join('')}
    ${ai?`<button class="item" id="dkAi"><span class="em">✨</span><span>Neues Diktat von der Lern-Eule<small>Jedes Mal neue Sätze – such dir ein Thema aus</small></span></button>`:''}</div>`;
   app.querySelector('.back').onclick=()=>openSubject('deutsch');
-  app.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>diktatRun(DIKTATE[+b.dataset.i],diktatMenue));
+  app.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>diktatRun((MODUL?DIKTATE_VS4:DIKTATE)[+b.dataset.i],diktatMenue));
   const ab=document.getElementById('dkAi'); if(ab) ab.onclick=()=>diktatKI(diktatMenue);
   app._back=()=>openSubject('deutsch'); currentCtx={label:'Diktat',detail:'Sie sucht sich ein Diktat aus.'}; scrollTo(0,0);
 }
@@ -3548,7 +3567,7 @@ function elternView(ok){
   }
   const tage=[]; for(let i=13;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');tage.push([k,LOG[k]||{n:0,r:0}]);}
   const max=Math.max(10,...tage.map(t=>t[1].n));
-  const alleTitel={}; Object.values(QUIZ).flat().forEach(q=>alleTitel[q.id]=q.name); [...MATH,...MATH2].forEach(m=>alleTitel[m.id]=m.name); [...BOOKS,...LONG_BOOKS].forEach(b=>alleTitel[b.id]='Buch: '+b.title); DIKTATE.forEach(d=>alleTitel[d.id]='Diktat: '+d.name);
+  const alleTitel={}; Object.values(QUIZ).flat().forEach(q=>alleTitel[q.id]=q.name); [...MATH,...MATH2].forEach(m=>alleTitel[m.id]=m.name); [...BOOKS,...LONG_BOOKS].forEach(b=>alleTitel[b.id]='Buch: '+b.title); [...DIKTATE,...DIKTATE_VS4].forEach(d=>alleTitel[d.id]='Diktat: '+d.name);
   const schwach=Object.entries(done).filter(([k,d])=>d.t&&d.s/d.t<0.6&&alleTitel[k]).slice(0,12);
   const stark=Object.entries(done).filter(([k,d])=>d.t&&d.s===d.t&&alleTitel[k]).length;
   const SAn=SA.tests.filter(t=>tageBis(t.datum)>=0).sort((a,b)=>a.datum.localeCompare(b.datum));
@@ -6042,7 +6061,7 @@ if(MODUL){
   openSubject=function(k){ if((ERLAUBT[MODUL.m]||[]).includes(k)) return _os2(k); zur(); };
   home=function(){ zur(); };
   document.documentElement.classList.add('modul');
-  const START={globus:()=>globeView(),lexikon:()=>bilderLexikon(),bilderquiz:()=>bilderQuiz(),buecher:()=>_os2('lesen'),wortschatz:()=>wortschatzMenue(),artikel:()=>artikelSeite()};
+  const START={diktat:()=>diktatMenue(),rechtschreibung:()=>rechtschreibTrainer(),woerterbuch:()=>woerterbuch(),klavier:()=>klavier(),malen:()=>malbrett(),bewegung:()=>bewegungspause(),timer:()=>lernTimer(),englischhoeren:()=>englischHoeren(),globus:()=>globeView(),lexikon:()=>bilderLexikon(),bilderquiz:()=>bilderQuiz(),buecher:()=>_os2('lesen'),wortschatz:()=>wortschatzMenue(),artikel:()=>artikelSeite()};
   (START[MODUL.m]||zur)();
 } else home();
 </script>

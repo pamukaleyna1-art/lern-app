@@ -104,8 +104,9 @@ function werkstattMenue(){
 }
 function werkstattStart(m){
   const st=wsStufe(m.id);
-  seite(`<h1>${m.em} ${m.name}</h1><p class="sub">${m.kurz}</p><div class="list">${m.stufen.map((s,i)=>`<button class="item" data-s="${i}" ${i>st.s?'style="opacity:.55"':''}><span class="em">${i<st.s?'✅':i===st.s?'▶️':'🔒'}</span><span><b>Stufe ${i+1}: ${s.name}</b><small>${i<st.s?'geschafft – zum Wiederholen antippen':i===st.s?'hier bist du gerade':'kommt bald – du kannst es aber schon ausprobieren'}</small></span></button>`).join('')}</div>`,werkstattMenue);
+  seite(`<h1>${m.em} ${m.name}</h1><p class="sub">${m.kurz}</p>${typeof FILME!=='undefined'&&FILME[m.id]?`<button class="item filmbtn" id="film" style="width:100%;margin-bottom:12px"><span class="em">🎬</span><span><b>So geht's – Erklär-Film</b><small style="color:#fff">Anschauen und zuhören</small></span></button>`:''}<div class="list">${m.stufen.map((s,i)=>`<button class="item" data-s="${i}" ${i>st.s?'style="opacity:.55"':''}><span class="em">${i<st.s?'✅':i===st.s?'▶️':'🔒'}</span><span><b>Stufe ${i+1}: ${s.name}</b><small>${i<st.s?'geschafft – zum Wiederholen antippen':i===st.s?'hier bist du gerade':'kommt bald – du kannst es aber schon ausprobieren'}</small></span></button>`).join('')}</div>`,werkstattMenue);
   app.querySelectorAll('[data-s]').forEach(b=>b.onclick=()=>werkstattRunde(m,+b.dataset.s));
+  const fb=$('#film'); if(fb) fb.onclick=()=>erklaerFilm(m.id,()=>werkstattStart(m));
 }
 function werkstattRunde(m,stufe){
   let nr=0,richtig=0;const RUNDE=8;

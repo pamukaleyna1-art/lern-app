@@ -36,20 +36,22 @@ function home(){
       <button class="tile" style="--c:#f59e0b" data-go="globus"><span class="em">🌍</span><b>Globus</b><small>Die Welt entdecken</small></button>
       <button class="tile" style="--c:#ec4899" data-go="buecher"><span class="em">📚</span><b>Bücher</b><small>Lesen & anhören</small></button>
       <button class="tile" style="--c:#0ea5e9" data-go="englisch"><span class="em">🇬🇧</span><b>Englisch</b><small>Wörter hören & lernen</small></button>
+      <button class="tile" style="--c:#14b8a6" data-go="freizeit"><span class="em">🎹</span><b>Freizeit & Pausen</b><small>Klavier, Malen, Bewegung</small></button>
       ${f?`<button class="tile" style="--c:#e11d48" data-go="fehler"><span class="em">🔁</span><b>Fehler üben</b><small>${f} Aufgaben zum Wiederholen</small></button>`:''}
       ${KI?`<button class="tile" style="--c:linear-gradient(135deg,#a855f7,#ec4899)" data-go="eule"><span class="em">🦉</span><b>Lern-Eule</b><small>Frag alles, was du wissen willst</small></button>`:''}
     </div>
     <div class="row" style="justify-content:center;margin-top:24px"><button class="btn ghost" id="wechsel">👥 Kind wechseln</button><button class="btn ghost" id="erw">🔒 Für Erwachsene</button></div>`);
   AUF_HOME=true;
-  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>({werkstatt:werkstattMenue,mathe:matheMenue,deutsch:()=>fachMenue('deutsch'),sach:()=>fachMenue('sach'),englisch:englischMenue,fehler:fehlerUeben,globus:()=>modul('globus'),buecher:()=>modul('buecher'),eule:()=>eule()})[b.dataset.go]());
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>({werkstatt:werkstattMenue,mathe:matheMenue,deutsch:()=>fachMenue('deutsch'),sach:()=>fachMenue('sach'),englisch:englischMenue,fehler:fehlerUeben,globus:()=>modul('globus'),freizeit:freizeit,buecher:()=>modul('buecher'),eule:()=>eule()})[b.dataset.go]());
   $('#wechsel').onclick=profilWahl; $('#erw').onclick=erwachsene;
 }
 $('#homeBtn').onclick=()=>home(); $('#kidBtn').onclick=profilWahl;
 
 function matheMenue(){
   farbe('var(--mathe)');KONTEXT='Mathematik 4. Klasse Volksschule';const d=store.get('done',{});
-  seite(`<h1>📐 Mathematik</h1><p class="sub">Die Aufgaben sind jedes Mal neu. Tipp: Wenn etwas schwer ist, geh in die <b>Rechen-Werkstatt</b> 🧮.</p>${KLEIN()?'<div class="learn" style="margin-bottom:12px">🌱 Hier kommen <b>kleinere Zahlen</b> und die Hilfe ist gleich zu sehen. Nimm dir Zeit!</div>':''}<div class="list">${MATHE.map(m=>m.h?`<div class="hdr">${m.h}</div>`:`<button class="item" data-id="${m.id}"><span class="em">${m.em}</span><span><b>${m.name}</b><small>${d[m.id]?'Bestes Ergebnis: '+d[m.id].best+' %':'10 Aufgaben'}</small></span></button>`).join('')}</div>`,home);
-  app.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const m=MATHE.find(x=>x.id===b.dataset.id);zahlRunde({id:m.id,titel:m.name,gen:()=>m.gen.call(m),anzahl:10,back:matheMenue});});
+  seite(`<h1>📐 Mathematik</h1><p class="sub">Die Aufgaben sind jedes Mal neu. Tipp: Wenn etwas schwer ist, geh in die <b>Rechen-Werkstatt</b> 🧮.</p>${KLEIN()?'<div class="learn" style="margin-bottom:12px">🌱 Hier kommen <b>kleinere Zahlen</b> und die Hilfe ist gleich zu sehen. Nimm dir Zeit!</div>':''}<div class="list"><div class="hdr">🎬 Erklär-Filme</div><div class="row" style="margin-top:4px">${['uhr','splus','mal','teilen','stellen','plusminus'].map(f=>`<button class="btn ghost" data-film="${f}">🎬 ${FILME[f].titel}</button>`).join('')}</div>${MATHE.map(m=>m.h?`<div class="hdr">${m.h}</div>`:`<button class="item" data-id="${m.id}"><span class="em">${m.em}</span><span><b>${m.name}</b><small>${d[m.id]?'Bestes Ergebnis: '+d[m.id].best+' %':'10 Aufgaben'}</small></span></button>`).join('')}</div>`,home);
+  app.querySelectorAll('[data-film]').forEach(b=>b.onclick=()=>erklaerFilm(b.dataset.film,matheMenue));
+  app.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const m=MATHE.find(x=>x.id===b.dataset.id);if(m.mc){const gen=()=>Array.from({length:KLEIN()?6:10},()=>m.gen.call(m));return mcRunde({id:m.id,titel:m.name,fragen:gen(),nachher:gen,back:matheMenue});}zahlRunde({id:m.id,titel:m.name,gen:()=>m.gen.call(m),anzahl:10,back:matheMenue});});
 }
 function fachMenue(fach){
   const Q=fach==='deutsch'?DEUTSCH:SACH;const T=[...Q.filter(t=>t.modul),...Q.filter(t=>!t.modul)];farbe(fach==='deutsch'?'var(--deutsch)':'var(--sach)');KONTEXT=fach==='deutsch'?'Deutsch 4. Klasse Volksschule':'Sachunterricht 4. Klasse Volksschule';const d=store.get('done',{});
@@ -63,8 +65,9 @@ function fachMenue(fach){
 }
 function englischMenue(){
   farbe('var(--englisch)');KONTEXT='Englisch 4. Klasse Volksschule (Wörter)';const d=store.get('done',{});
-  seite(`<h1>🇬🇧 Englisch</h1><p class="sub">Tippe auf 🔊, dann hörst du das Wort auf Englisch.</p>
+  seite(`<h1>🇬🇧 Englisch</h1><p class="sub">Tippe auf 🔊, dann hörst du das Wort auf Englisch.</p><button class="item filmbtn" id="ehoer" style="width:100%;margin-bottom:12px"><span class="em">🎧</span><span><b>Englisch hören</b><small style="color:#fff">Wörter anhören, verstehen und richtig schreiben</small></span></button>
     <div class="list">${ENGLISCH.map(t=>`<button class="item" data-id="${t.id}"><span class="em">${t.em}</span><span><b>${t.name}</b><small>${t.w.slice(0,4).map(x=>x[0]).join(', ')} …${d[t.id]?' · Bestes: '+d[t.id].best+' %':''}</small></span><span class="lvl">📖</span></button>`).join('')}</div>`,home);
+  $('#ehoer').onclick=()=>modul('englischhoeren');
   app.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>englischThema(ENGLISCH.find(x=>x.id===b.dataset.id)));
 }
 function englischThema(t){
@@ -104,3 +107,10 @@ function erwachsene(){
 
 zeigSterne();
 if(KIND&&kindInfo()) home(); else profilWahl();
+
+function freizeit(){
+  farbe('#14b8a6');KONTEXT=null;
+  const L=[['klavier','🎹','Klavier','Spielen, Lieder mit Noten zum Mitspielen'],['malen','🎨','Malen','Mit dem Finger oder Stift malen'],['bewegung','🤸','Bewegungspause','Kurz aufstehen und bewegen – dann lernt es sich leichter'],['timer','⏱️','Lern-Timer','Konzentriert lernen, dann Pause']];
+  seite(`<h1>🎹 Freizeit & Pausen</h1><p class="sub">Pausen sind wichtig – danach lernt dein Gehirn besser!</p><div class="list">${L.map(([m,e,n,s])=>`<button class="item" data-m="${m}"><span class="em">${e}</span><span><b>${n}</b><small>${s}</small></span><span class="lvl">›</span></button>`).join('')}</div>`,home);
+  app.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>modul(b.dataset.m));
+}

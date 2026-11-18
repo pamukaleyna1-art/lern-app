@@ -93,16 +93,22 @@ function zahlRunde({id,titel,gen,anzahl=10,back}){
     KONTEXT=`Rechenübung „${titel}“: ${t.q} (Ergebnis ${t.a} – nicht verraten, Rechenweg in kleinen Schritten erklären)`;
     seite(`<div class="card"><div class="progress"><div style="width:${i/anzahl*100}%"></div></div><div class="meta"><span>${esc(titel)}</span><span>Aufgabe ${i+1} von ${anzahl}</span></div>
       ${t.bild||''}<div class="q">${esc(t.q)}${spk(t.sag||t.q)}</div><div id="zb"></div><div class="fb"></div><div id="hl"></div>
-      <div class="row" style="justify-content:center">${t.tipp?'<button class="btn soft" id="hb">🙋 Ich brauche Hilfe</button>':''}${KI?'<button class="btn ghost" id="eb">🦉 Erklär es mir</button>':''}</div>
+      <div class="row" style="justify-content:center">${t.tipp||t.schritte?'<button class="btn soft" id="hb">🙋 Ich brauche Hilfe</button>':''}${KI?'<button class="btn ghost" id="eb">🦉 Erklär es mir</button>':''}</div>
       <div class="row" id="wr" style="display:none"><button class="btn" id="weiter">Weiter →</button></div></div>`,back);
     const fb=app.querySelector('.fb');
-    const hilfe=()=>{const h=$('#hl');if(h&&!h.innerHTML)h.innerHTML=`<div class="help">🙋 ${t.tipp}</div>`;};
-    if($('#hb'))$('#hb').onclick=hilfe; if($('#eb'))$('#eb').onclick=()=>eule('Kannst du mir bei dieser Aufgabe helfen? '+t.q);
-    if(KLEIN()&&t.tipp) hilfe();
+    let gezeigt=0;
+    const hilfe=(alle)=>{const h=$('#hl');if(!h)return;
+      if(!t.schritte){ if(!h.innerHTML) h.innerHTML=`<div class="help">🙋 ${t.tipp}</div>`; return; }
+      gezeigt=alle?t.schritte.length:Math.max(gezeigt,1);
+      const mal=()=>{h.innerHTML=`<div class="help">🙋 <b>Rechenweg – Schritt für Schritt</b>${t.bildHilfe||''}${t.schritte.slice(0,gezeigt).map((x,i)=>`<div class="step">${i+1}. ${x}</div>`).join('')}${gezeigt<t.schritte.length?'<div class="row" style="justify-content:center;margin-top:8px"><button class="btn" id="naechst">Nächster Schritt ➜</button></div>':''}</div>`;
+        const nb=h.querySelector('#naechst'); if(nb) nb.onclick=()=>{gezeigt++;mal();};};
+      mal(); const hb=$('#hb'); if(hb) hb.style.display='none';};
+    if($('#hb'))$('#hb').onclick=()=>hilfe(); if($('#eb'))$('#eb').onclick=()=>eule('Kannst du mir bei dieser Aufgabe helfen? '+t.q);
+    if(KLEIN()&&(t.tipp||t.schritte)) hilfe();
     const zb=ziffernblock($('#zb'),{max:9,onOk:v=>{
       if(v===t.a){ if(versuch===0){score++;addSterne(1);} fb.className='fb ok';fb.innerHTML=pick(LOB)+(t.e?`<div class="ex">💡 ${t.e}</div>`:'');$('#zb').style.pointerEvents='none';$('#wr').style.display='flex';$('#weiter').onclick=()=>{i++;show();};}
-      else{versuch++; if(versuch<2){fb.className='fb no';fb.innerHTML='Noch nicht ganz – probier es noch einmal! 💪'+(t.tipp?`<div class="ex">💡 Tipp: ${t.tipp}</div>`:'');zb.reset();}
-        else{logFehler(t.q,t.a,titel);fb.className='fb no';fb.innerHTML=`Das Ergebnis ist <b>${fmt(t.a)}</b>.`+(t.e?`<div class="ex">💡 ${t.e}</div>`:'');$('#zb').style.pointerEvents='none';$('#wr').style.display='flex';$('#weiter').onclick=()=>{i++;show();};}}
+      else{versuch++; if(versuch<2){fb.className='fb no';fb.innerHTML='Noch nicht ganz – probier es noch einmal! 💪 Schau dir den Rechenweg an.';if(t.schritte||t.tipp)hilfe();zb.reset();}
+        else{logFehler(t.q,t.a,titel);fb.className='fb no';fb.innerHTML=`Das Ergebnis ist <b>${fmt(t.a)}</b>.`+(t.e?`<div class="ex">💡 ${t.e}</div>`:'')+'<div class="ex">Das ist ganz normal – mit dem Rechenweg klappt es beim nächsten Mal leichter. 🌱</div>';if(t.schritte)hilfe(true);$('#zb').style.pointerEvents='none';$('#wr').style.display='flex';$('#weiter').onclick=()=>{i++;show();};}}
     }});
   }
   show();

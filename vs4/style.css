@@ -112,3 +112,16 @@ input.txt{font:inherit;font-size:1.2rem;font-weight:800;padding:12px 14px;border
 .spinner{display:inline-block;animation:p 1s infinite}@keyframes p{50%{opacity:.3}}
 .confetti{position:fixed;inset:0;pointer-events:none;z-index:70}
 @media (max-width:420px){h1{font-size:1.5rem}.q{font-size:1.25rem}.zf{grid-template-columns:repeat(5,24px)}.zf i{width:24px;height:24px}.opt.big{font-size:1.6rem}}
+
+.pop{display:inline-block;animation:pop .45s cubic-bezier(.2,1.4,.5,1) both}
+i.pop{display:block}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.ftext{text-align:center;font-size:1.5rem;font-weight:900;margin:12px 0;line-height:1.6}
+.filmtext{font-size:1.15rem;font-weight:700;line-height:1.55;text-align:center;margin:14px 0 4px;min-height:3.2em}
+.filmbild{min-height:220px;display:flex;flex-direction:column;justify-content:center;animation:fade .4s both}
+@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.drehen{animation:dreh 2.4s ease-in-out .6s both}
+@keyframes dreh{from{transform:rotate(90deg)}to{transform:rotate(0)}}
+.uhrdreh .mz{transform-box:view-box;transform-origin:100px 100px;animation:spin 6s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.filmbtn{background:linear-gradient(135deg,#f59e0b,#ef4444)!important;color:#fff!important;border:none!important}
