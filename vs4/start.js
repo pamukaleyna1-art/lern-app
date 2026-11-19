@@ -36,7 +36,7 @@ function home(){
       <button class="tile" style="--c:#16a34a" data-go="sach"><span class="em">🌍</span><b>Sachunterricht</b><small>Österreich, Körper, Natur</small></button>
       <button class="tile" style="--c:#f59e0b" data-go="globus"><span class="em">🌍</span><b>Globus</b><small>Die Welt entdecken</small></button>
       <button class="tile" style="--c:#ec4899" data-go="buecher"><span class="em">📚</span><b>Bücher</b><small>Lesen & anhören</small></button>
-      <button class="tile" style="--c:#0ea5e9" data-go="englisch"><span class="em">🇬🇧</span><b>Englisch</b><small>Wörter hören & lernen</small></button>
+      <button class="tile" style="--c:#0ea5e9" data-go="englisch"><span class="em"><img src="../flags/gb.svg" alt="" class="flg" style="height:1.15em"></span><b>Englisch</b><small>Wörter hören & lernen</small></button>
       <button class="tile" style="--c:#14b8a6" data-go="freizeit"><span class="em">🎹</span><b>Freizeit & Pausen</b><small>Klavier, Malen, Bewegung</small></button>
       ${f?`<button class="tile" style="--c:#e11d48" data-go="fehler"><span class="em">🔁</span><b>Fehler üben</b><small>${f} Aufgaben zum Wiederholen</small></button>`:''}
       ${KI?`<button class="tile" style="--c:linear-gradient(135deg,#a855f7,#ec4899)" data-go="eule"><span class="em">🦉</span><b>Lern-Eule</b><small>Frag alles, was du wissen willst</small></button>`:''}
@@ -67,7 +67,7 @@ function fachMenue(fach){
 }
 function englischMenue(){
   farbe('var(--englisch)');KONTEXT='Englisch 4. Klasse Volksschule (Wörter)';const d=store.get('done',{});
-  seite(`<h1>🇬🇧 Englisch</h1><p class="sub">Tippe auf 🔊, dann hörst du das Wort auf Englisch.</p><button class="item filmbtn" id="ehoer" style="width:100%;margin-bottom:12px"><span class="em">🎧</span><span><b>Englisch hören</b><small style="color:#fff">Wörter anhören, verstehen und richtig schreiben</small></span></button>
+  seite(`<h1><img src="../flags/gb.svg" alt="" class="flg" style="height:.9em"> Englisch</h1><p class="sub">Tippe auf 🔊, dann hörst du das Wort auf Englisch.</p><button class="item filmbtn" id="ehoer" style="width:100%;margin-bottom:12px"><span class="em">🎧</span><span><b>Englisch hören</b><small style="color:#fff">Wörter anhören, verstehen und richtig schreiben</small></span></button>
     <div class="list">${ENGLISCH.map(t=>`<button class="item" data-id="${t.id}"><span class="em">${t.em}</span><span><b>${t.name}</b><small>${t.w.slice(0,4).map(x=>x[0]).join(', ')} …${d[t.id]?' · Bestes: '+d[t.id].best+' %':''}</small></span><span class="lvl">📖</span></button>`).join('')}</div>`,home);
   $('#ehoer').onclick=()=>modul('englischhoeren');
   app.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>englischThema(ENGLISCH.find(x=>x.id===b.dataset.id)));

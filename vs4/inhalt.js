@@ -97,7 +97,7 @@ const SACH=[
  {id:'m-globus',em:'🌍',name:'Globus',small:'Dreh die Erde, entdecke Länder, Städte und Tiere',modul:'globus'},
  {id:'m-lexikon',em:'📸',name:'Bilder-Lexikon: Tiere & Pflanzen',small:'Echte Fotos – antippen, anhören, mehr lesen',modul:'lexikon'},
  {id:'m-bilderquiz',em:'🖼️',name:'Bilder-Quiz: Wer ist das?',small:'Erkennst du Tier oder Pflanze?',modul:'bilderquiz'},
- {id:'s-oesterreich',em:'🇦🇹',name:'Österreich',fr:[
+ {id:'s-oesterreich',em:'<img src="../flags/at.svg" alt="" class="flg" style="height:1.1em">',name:'Österreich',fr:[
   ['Wie viele Bundesländer hat Österreich?',['7','9','12'],1,'Wien, Niederösterreich, Oberösterreich, Salzburg, Tirol, Vorarlberg, Kärnten, Steiermark, Burgenland.'],
   ['Hauptstadt von Salzburg?',['Salzburg','Linz','Hallein'],0,'Das Bundesland und die Stadt heißen gleich.'],
   ['Hauptstadt von Oberösterreich?',['Graz','Linz','Wels'],1,'Linz liegt an der Donau.'],

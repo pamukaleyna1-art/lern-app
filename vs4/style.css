@@ -143,3 +143,5 @@ i.pop{display:block}
 .kt.heute{border-color:var(--teal);background:#ccfbf1}
 .kt.sel{background:#f97316;color:#fff;border-color:#ea580c}
 .kt.zw{background:#ffedd5}
+
+img.flg{vertical-align:-.12em;border-radius:.18em;box-shadow:0 1px 3px rgba(0,0,0,.25);aspect-ratio:4/3;object-fit:cover}

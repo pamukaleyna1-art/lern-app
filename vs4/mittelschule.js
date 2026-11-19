@@ -48,7 +48,7 @@ const MS_THEMEN=[
   ['Welches Wort ist ein Adjektiv?',['freundlich','Freund','befreunden'],0,'freundlich sagt, wie jemand ist.'],
   ['Was ist „weil“?',['Bindewort','Vorwort','Nomen'],0,'„weil“ leitet eine Begründung ein: …, weil es regnet.'],
   ['Wie heißt die Grundform von „sie lief“?',['laufen','liefen','lauft'],0,'Die Grundform (Infinitiv) endet auf -en: laufen.']]},
- {id:'ms-englisch',em:'🇬🇧',name:'Englisch: erste Sätze',fr:[
+ {id:'ms-englisch',em:'<img src="../flags/gb.svg" alt="" class="flg" style="height:1.1em">',name:'Englisch: erste Sätze',fr:[
   ['„Ich heiße Lara.“ auf Englisch?',['My name is Lara.','I am name Lara.','Name me Lara.'],0,'My name is … / I am …'],
   ['„Wie alt bist du?“ auf Englisch?',['How old are you?','How are you?','Where are you?'],0,'How old are you? – I am ten.'],
   ['„I have got a dog.“ heißt …',['Ich habe einen Hund.','Ich bin ein Hund.','Ich mag Hunde.'],0,'have got = haben'],
@@ -66,7 +66,7 @@ function mittelschulFit(){
      <div class="hdr">📐 Mathematik</div>${MS_MATHE.map(m=>item(m,'m')).join('')}
      <div class="hdr">📝 Deutsch</div>${MS_THEMEN.slice(1,4).map(t=>item(t,'q')).join('')}
      <button class="item" data-mod="artikel"><span class="em">🎯</span><span><b>Artikel-Trainer: des, dem, den</b><small>Mit Tricks und Übungen</small></span><span class="lvl">›</span></button>
-     <div class="hdr">🇬🇧 Englisch</div>${MS_THEMEN.slice(4).map(t=>item(t,'q')).join('')}
+     <div class="hdr"><img src="../flags/gb.svg" alt="" class="flg" style="height:1em"> Englisch</div>${MS_THEMEN.slice(4).map(t=>item(t,'q')).join('')}
      <button class="item" data-mod="sprachen"><span class="em">🌍</span><span><b>Sprachlektionen</b><small>Englisch, Türkisch, Italienisch & mehr – Schritt für Schritt</small></span><span class="lvl">›</span></button>
     </div>`,home);
   function item(t,k){return `<button class="item" data-${k}="${t.id}"><span class="em">${t.em}</span><span><b>${t.name}</b><small>${d[t.id]?'Bestes Ergebnis: '+d[t.id].best+' %':k==='m'?'mit Rechenweg':'8 Fragen'}</small></span></button>`;}
