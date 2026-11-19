@@ -55,11 +55,12 @@ function matheMenue(){
   app.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const m=MATHE.find(x=>x.id===b.dataset.id);if(m.mc){const gen=()=>Array.from({length:KLEIN()?6:10},()=>m.gen.call(m));return mcRunde({id:m.id,titel:m.name,fragen:gen(),nachher:gen,back:matheMenue});}zahlRunde({id:m.id,titel:m.name,gen:()=>m.gen.call(m),anzahl:10,back:matheMenue});});
 }
 function fachMenue(fach){
-  const Q=fach==='deutsch'?DEUTSCH:SACH;const T=[...Q.filter(t=>t.modul),...Q.filter(t=>!t.modul)];farbe(fach==='deutsch'?'var(--deutsch)':'var(--sach)');KONTEXT=fach==='deutsch'?'Deutsch 4. Klasse Volksschule':'Sachunterricht 4. Klasse Volksschule';const d=store.get('done',{});
+  const Q=fach==='deutsch'?DEUTSCH:SACH;const T=[...Q.filter(t=>t.modul||t.lokal),...Q.filter(t=>!t.modul&&!t.lokal)];farbe(fach==='deutsch'?'var(--deutsch)':'var(--sach)');KONTEXT=fach==='deutsch'?'Deutsch 4. Klasse Volksschule':'Sachunterricht 4. Klasse Volksschule';const d=store.get('done',{});
   seite(`<h1>${fach==='deutsch'?'📝 Deutsch':'🌍 Sachunterricht'}</h1><p class="sub">Jedes Mal kommen andere Fragen dran${KI?' – und die Lern-Eule denkt sich laufend neue aus':''}.</p>
-    <div class="list">${T.map((t,i)=>(t.modul&&i===0?'<div class="hdr">✨ Entdecken</div>':'')+(!t.modul&&i>0&&T[i-1].modul?'<div class="hdr">✏️ Übungen</div>':'')+`<button class="item" data-id="${t.id}"><span class="em">${t.em}</span><span><b>${t.name}</b><small>${t.modul?t.small:d[t.id]?'Bestes Ergebnis: '+d[t.id].best+' %':'8 Fragen'}</small></span>${t.modul?'<span class="lvl">›</span>':''}</button>`).join('')}</div>`,home);
+    <div class="list">${T.map((t,i)=>((t.modul||t.lokal)&&i===0?'<div class="hdr">✨ Entdecken</div>':'')+(!(t.modul||t.lokal)&&i>0&&(T[i-1].modul||T[i-1].lokal)?'<div class="hdr">✏️ Übungen</div>':'')+`<button class="item" data-id="${t.id}"><span class="em">${t.em}</span><span><b>${t.name}</b><small>${t.modul||t.lokal?t.small:d[t.id]?'Bestes Ergebnis: '+d[t.id].best+' %':'8 Fragen'}</small></span>${t.modul||t.lokal?'<span class="lvl">›</span>':''}</button>`).join('')}</div>`,home);
   app.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>{const t=T.find(x=>x.id===b.dataset.id);const back=()=>fachMenue(fach);
     if(t.modul) return modul(t.modul);
+    if(t.lokal) return window[t.lokal]();
     if(t.artikel){const gen=()=>shuffle(ARTIKEL4).slice(0,10).map(([w,g,em])=>({q:`${em?em+' ':''}___ ${w}`,sag:w,o:['der','die','das'],a:['der','die','das'].indexOf(g),fix:true,e:artikelErkl(w,g)}));
       return mcRunde({id:t.id,titel:t.name,fragen:gen(),nachher:gen,back});}
     mcRunde({id:t.id,titel:t.name,fragen:themaFragen(t),nachher:()=>themaFragen(t),back});nachschub(t,fach==='deutsch'?'Deutsch':'Sachunterricht');});

@@ -77,6 +77,23 @@ const DEUTSCH=[
   ['Welches Wort hat die Vorsilbe „ver-“?',['verlieren','fahren','Rose'],0,'ver-lieren']]}
 ];
 const SACH=[
+ {id:'m-kalender',em:'📅',name:'Kalender',small:'Tage, Wochen, Monate – mit Kalender zum Nachschauen',lokal:'kalenderSeite'},
+ {id:'s-kalender',em:'🗓️',name:'Tage, Wochen & Monate',fr:[
+  ['Wie viele Tage hat eine Woche?',['7','5','10'],0,'Montag bis Sonntag – das sind 7 Tage.'],
+  ['Welcher Tag kommt nach Mittwoch?',['Donnerstag','Dienstag','Freitag'],0,'Montag, Dienstag, Mittwoch, Donnerstag …'],
+  ['Heute ist Montag. Welcher Tag ist in 3 Tagen?',['Donnerstag','Mittwoch','Freitag'],0,'Dienstag (1), Mittwoch (2), Donnerstag (3).'],
+  ['Heute ist Freitag. Welcher Tag war gestern?',['Donnerstag','Samstag','Mittwoch'],0,'Gestern ist der Tag davor.'],
+  ['Welche Tage gehören zum Wochenende?',['Samstag und Sonntag','Freitag und Samstag','Sonntag und Montag'],0,'Samstag und Sonntag.'],
+  ['Wie viele Monate hat ein Jahr?',['12','10','52'],0,'Jänner bis Dezember – 12 Monate.'],
+  ['Welcher Monat kommt nach März?',['April','Mai','Februar'],0,'Jänner, Februar, März, April …'],
+  ['Wie viele Tage hat der Februar (kein Schaltjahr)?',['28','30','31'],0,'Der Februar ist der kürzeste Monat: 28 Tage, im Schaltjahr 29.'],
+  ['Wie viele Tage hat der Juli?',['31','30','28'],0,'Knöchel-Trick: Juli liegt auf einem Knöchel → 31 Tage.'],
+  ['Wie viele Tage hat der April?',['30','31','28'],0,'April liegt in einer Lücke → 30 Tage.'],
+  ['Wie viele Wochen hat ein Jahr ungefähr?',['52','12','100'],0,'Etwa 52 Wochen.'],
+  ['Wie viele Tage sind 2 Wochen?',['14','12','10'],0,'2 · 7 = 14'],
+  ['In welchem Monat ist Weihnachten?',['Dezember','November','Jänner'],0,'Am 24. Dezember.'],
+  ['Mit welchem Monat beginnt das Jahr?',['Jänner','März','September'],0,'Mit dem Jänner (Januar).'],
+  ['Wie viele Tage hat ein Schaltjahr?',['366','365','360'],0,'Alle 4 Jahre gibt es einen 29. Februar – dann sind es 366 Tage.']]},
  {id:'m-globus',em:'🌍',name:'Globus',small:'Dreh die Erde, entdecke Länder, Städte und Tiere',modul:'globus'},
  {id:'m-lexikon',em:'📸',name:'Bilder-Lexikon: Tiere & Pflanzen',small:'Echte Fotos – antippen, anhören, mehr lesen',modul:'lexikon'},
  {id:'m-bilderquiz',em:'🖼️',name:'Bilder-Quiz: Wer ist das?',small:'Erkennst du Tier oder Pflanze?',modul:'bilderquiz'},

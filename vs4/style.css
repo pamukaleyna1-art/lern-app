@@ -131,3 +131,15 @@ i.pop{display:block}
 .stufen .on{background:var(--teal);color:#fff}
 .stufen .spr{background:linear-gradient(135deg,#0e7490,#be185d);color:#fff}
 @media (max-width:480px){.stufen{margin:0 0 14px}.stufen button{padding:8px 10px;font-size:.85rem}}
+
+.kal{background:#fff;border:2px solid var(--line);border-radius:18px;padding:10px}
+.kalkopf{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:1.2rem}
+.kalkopf .btn{padding:8px 14px}
+.kalgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.kalgrid .kw{font-weight:900;color:var(--muted);font-size:.9rem;padding:4px 0}
+.kalgrid .we{color:#e11d48}
+.kt{border:2px solid var(--line);background:#fff;border-radius:10px;padding:8px 0;font-weight:800;font-size:1.05rem;color:var(--ink);font-family:inherit}
+.kt.we{background:#fff1f2}
+.kt.heute{border-color:var(--teal);background:#ccfbf1}
+.kt.sel{background:#f97316;color:#fff;border-color:#ea580c}
+.kt.zw{background:#ffedd5}
