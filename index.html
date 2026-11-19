@@ -1672,8 +1672,8 @@ const BUNDESLAENDER={
  '08':{n:'Vorarlberg',hs:'Bregenz',lat:47.50,lon:9.75,t:'Das Bundesland ganz im Westen, am Bodensee. Es grenzt an die Schweiz, an Deutschland und an Liechtenstein.'},
  '09':{n:'Wien',hs:'Wien',lat:48.21,lon:16.37,t:'Wien ist die Hauptstadt von Österreich – und gleichzeitig ein eigenes Bundesland.'}
 };
-const BUERMOOS=(typeof MODUL!=='undefined'&&MODUL)?[13.04,47.80]:[12.918,47.983]; // App 2: Stadt Salzburg, App 1: Bürmoos
-const HEIMAT=(typeof MODUL!=='undefined'&&MODUL)?{name:'Salzburg',in:'in der Stadt Salzburg',bei:'bei der Stadt Salzburg',ew:157000}:{name:'Bürmoos',in:'in Bürmoos',bei:'bei Bürmoos',ew:4900};
+const BUERMOOS=[13.04,47.80]; // Bezugspunkt: Stadt Salzburg (beide Apps)
+const HEIMAT={name:'Salzburg',in:'in der Stadt Salzburg',bei:'bei der Stadt Salzburg',ew:157000};
 function wappenHTML(key,cls){ const w=WAPPEN[key]; return w?`<img class="wappen ${cls||''}" src="${w.s}" alt="Wappen" title="Wappen – ${esc(w.a)}${w.l?' · '+esc(w.l):''}" loading="lazy">`:''; }
 function kmVonBuermoos(lon,lat){ return Math.round(d3.geoDistance([lon,lat],BUERMOOS)*6371); }
 function vergleichBuermoos(pop){
