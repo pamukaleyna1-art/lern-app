@@ -1672,20 +1672,21 @@ const BUNDESLAENDER={
  '08':{n:'Vorarlberg',hs:'Bregenz',lat:47.50,lon:9.75,t:'Das Bundesland ganz im Westen, am Bodensee. Es grenzt an die Schweiz, an Deutschland und an Liechtenstein.'},
  '09':{n:'Wien',hs:'Wien',lat:48.21,lon:16.37,t:'Wien ist die Hauptstadt von Österreich – und gleichzeitig ein eigenes Bundesland.'}
 };
-const BUERMOOS=[13.04,47.80]; // Bezugspunkt: Stadt Salzburg
+const BUERMOOS=(typeof MODUL!=='undefined'&&MODUL)?[13.04,47.80]:[12.918,47.983]; // App 2: Stadt Salzburg, App 1: Bürmoos
+const HEIMAT=(typeof MODUL!=='undefined'&&MODUL)?{name:'Salzburg',in:'in der Stadt Salzburg',bei:'bei der Stadt Salzburg',ew:157000}:{name:'Bürmoos',in:'in Bürmoos',bei:'bei Bürmoos',ew:4900};
 function wappenHTML(key,cls){ const w=WAPPEN[key]; return w?`<img class="wappen ${cls||''}" src="${w.s}" alt="Wappen" title="Wappen – ${esc(w.a)}${w.l?' · '+esc(w.l):''}" loading="lazy">`:''; }
 function kmVonBuermoos(lon,lat){ return Math.round(d3.geoDistance([lon,lat],BUERMOOS)*6371); }
 function vergleichBuermoos(pop){
-  const b=157000; if(!pop) return '';
-  if(pop>=b*1.8){const x=Math.round(pop/b);return x>=1000?`Hier wohnen über ${fmt(Math.floor(x/1000)*1000)}-mal so viele Menschen wie in der Stadt Salzburg!`:`Hier wohnen ungefähr ${fmt(x)}-mal so viele Menschen wie in der Stadt Salzburg.`;}
-  if(pop<=b/1.8) return 'Hier wohnen weniger Menschen als in der Stadt Salzburg.';
-  return 'Hier wohnen ungefähr so viele Menschen wie in der Stadt Salzburg.';
+  const b=HEIMAT.ew; if(!pop) return '';
+  if(pop>=b*1.8){const x=Math.round(pop/b);return x>=1000?`Hier wohnen über ${fmt(Math.floor(x/1000)*1000)}-mal so viele Menschen wie ${HEIMAT.in}!`:`Hier wohnen ungefähr ${fmt(x)}-mal so viele Menschen wie ${HEIMAT.in}.`;}
+  if(pop<=b/1.8) return `Hier wohnen weniger Menschen als ${HEIMAT.in}.`;
+  return `Hier wohnen ungefähr so viele Menschen wie ${HEIMAT.in}.`;
 }
 function einfacheInfos(name,cc,lat,lon,pop,bl){
   const f=GEO&&GEO.byCC[cc], inf=COUNTRY_INFO[cc], km=kmVonBuermoos(lon,lat);
   const li=[];
-  if(name!=='Salzburg') li.push(km<3?'Das ist ganz nah bei der Stadt Salzburg!':`Von Salzburg bis hierher sind es ungefähr <b>${fmt(km)} km</b> Luftlinie${km>2500?' – da fliegt man mit dem Flugzeug hin ✈️':km>300?' – das ist eine lange Reise 🚗':' 🚗'}.`);
-  if(pop&&name!=='Salzburg') li.push(vergleichBuermoos(pop));
+  if(name!==HEIMAT.name) li.push(km<3?`Das ist ganz nah ${HEIMAT.bei}!`:`Von ${HEIMAT.name} bis hierher sind es ungefähr <b>${fmt(km)} km</b> Luftlinie${km>2500?' – da fliegt man mit dem Flugzeug hin ✈️':km>300?' – das ist eine lange Reise 🚗':' 🚗'}.`);
+  if(pop&&name!==HEIMAT.name) li.push(vergleichBuermoos(pop));
   if(bl&&BUNDESLAENDER[bl]) li.push(`Der Ort liegt im Bundesland <b>${BUNDESLAENDER[bl].n}</b>. Die Hauptstadt davon ist ${BUNDESLAENDER[bl].hs}.`);
   else if(inf) li.push(`Das Land heißt <b>${esc(f?f.de:cc)}</b>. Die Hauptstadt ist ${esc(inf.cap.split(' (')[0])}.`);
   if(inf) li.push(`Die Menschen dort sprechen ${esc(inf.lang)}.`);
@@ -1746,7 +1747,7 @@ function globeView(){
     <div class="card infop" id="infoP">
       <h2>👋 Willkommen auf deiner Weltreise!</h2>
       <p>☝️ <b>Ziehen</b> = Erde drehen · <b>+ / −</b> oder zwei Finger = zoomen · <b>Tippen</b> = Infos zu Land oder Stadt</p>
-      <p>🔍 Je weiter du hineinzoomst, desto mehr Städte erscheinen – bis zu kleinen Orten. <b>Findest du Salzburg?</b> 🎒</p>
+      <p>🔍 Je weiter du hineinzoomst, desto mehr Städte erscheinen – bis zu kleinen Orten. <b>Findest du ${HEIMAT.name}?</b> 🎒</p>
       <p>🏛️ Die Symbole zeigen Sehenswürdigkeiten (z. B. 🗼 Eiffelturm), 🐾 die Tiere zeigen, wo welches Tier lebt. Tipp sie an!</p>
     </div>`;
   app.querySelector('.back').onclick=()=>{G.stop=true;openSubject('geo');};
@@ -1833,7 +1834,7 @@ function startGlobe(G){
       if(n>260) return;
       if(d3.geoDistance([cd.lon,cd.lat],c)>1.45) return;
       const p=proj([cd.lon,cd.lat]); if(!p) return;
-      const o=cd.cur||cd.big, sel=G.selCity===o, special=cd.name==='Salzburg';
+      const o=cd.cur||cd.big, sel=G.selCity===o, special=cd.name===HEIMAT.name;
       const fs=sel?15:cd.cur||cd.pr>=1e6?13:cd.pr>=1e5?12:11;
       ctx.font=`${cd.cur||cd.pr>=1e5?900:800} ${fs}px Nunito, sans-serif`;
       const t=(special?'🎒 ':'')+cd.name, w=ctx.measureText(t).width;
@@ -1965,7 +1966,7 @@ function startGlobe(G){
     currentCtx={label:'Bundesland '+b.n,detail:`Sie schaut sich das österreichische Bundesland ${b.n} an.`};
     const orte=BIGCITIES.filter(c=>c.bl===code).slice(0,8);
     setPanel(`<div class="ihead"><span class="iflag">${wappenHTML('B:'+b.n,'lg')}</span><div><h2 class="say" ${say(b.n)}>${b.n} <span class="spk">🔊</span></h2><div class="itype">Bundesland in ${flag('AT')} Österreich</div></div></div>
-      <div class="ifacts"><div><span>🏛️ Landeshauptstadt</span><b>${b.hs}</b></div><div><span>🎒 Entfernung von Salzburg</span><b>${code==='05'?'Du bist hier zu Hause!':'ca. '+fmt(kmVonBuermoos(b.lon,b.lat))+' km bis zur Hauptstadt'}</b></div></div>
+      <div class="ifacts"><div><span>🏛️ Landeshauptstadt</span><b>${b.hs}</b></div><div><span>🎒 Entfernung von ${HEIMAT.name}</span><b>${code==='05'?'Du bist hier zu Hause!':'ca. '+fmt(kmVonBuermoos(b.lon,b.lat))+' km bis zur Hauptstadt'}</b></div></div>
       <div class="isec"><p>${b.t}</p></div>
       ${orte.length?infoBlock('🏙️ Größere Orte',`<div class="chips">${orte.map(c=>`<button class="chip" data-bc="${BIGCITIES.indexOf(c)}">${esc(c.name)}</button>`).join('')}</div>`):''}
       ${photoLinks(b.n==='Salzburg'?'Land Salzburg':b.n,'Bundesland in Österreich')}`);
