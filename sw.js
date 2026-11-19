@@ -1,4 +1,4 @@
-const CACHE='lernapp-v1';
+const CACHE='lernapp-v2';
 const KERN=['./','index.html','config.js','ki.js','manifest.webmanifest','cities.json','world.json','icons/icon-192.png','icons/icon-512.png'];
 self.addEventListener('install',e=>{ e.waitUntil(caches.open(CACHE).then(c=>c.addAll(KERN)).then(()=>self.skipWaiting())); });
 self.addEventListener('activate',e=>{ e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())); });
