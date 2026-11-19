@@ -27,7 +27,8 @@ function home(){
   if(!KIND||!kindInfo()) return profilWahl();
   farbe('var(--teal)');KONTEXT=null;$('#eulenBtn').style.display='';zeigSterne();
   const k=kindInfo();const f=store.get('fehler',[]).length;
-  seite(`<h1>Hallo ${esc(k.name)}! ${k.emoji}</h1><p class="sub">Was möchtest du heute üben? Für jede richtige Antwort bekommst du einen ⭐.</p>
+  seite(`<div class="stufen"><button class="on">4. Klasse</button><button data-go="ms">🚀 Fit für die Mittelschule</button><button data-go="sprachen" class="spr">🌍 Sprachlektionen</button></div>
+    <h1>Hallo ${esc(k.name)}! ${k.emoji}</h1><p class="sub">Was möchtest du heute üben? Für jede richtige Antwort bekommst du einen ⭐.</p>
     <div class="grid">
       <button class="tile wide" style="--c:linear-gradient(135deg,#f97316,#fb923c)" data-go="werkstatt"><span class="em">🧮</span><span><b>Rechen-Werkstatt</b><br><small>Rechnen verstehen – Schritt für Schritt, mit Bildern und ohne Zeitdruck</small></span></button>
       <button class="tile" style="--c:#ef4444" data-go="mathe"><span class="em">📐</span><b>Mathematik</b><small>4. Klasse</small></button>
@@ -42,7 +43,7 @@ function home(){
     </div>
     <div class="row" style="justify-content:center;margin-top:24px"><button class="btn ghost" id="wechsel">👥 Kind wechseln</button><button class="btn ghost" id="erw">🔒 Für Erwachsene</button></div>`);
   AUF_HOME=true;
-  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>({werkstatt:werkstattMenue,mathe:matheMenue,deutsch:()=>fachMenue('deutsch'),sach:()=>fachMenue('sach'),englisch:englischMenue,fehler:fehlerUeben,globus:()=>modul('globus'),freizeit:freizeit,buecher:()=>modul('buecher'),eule:()=>eule()})[b.dataset.go]());
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>({werkstatt:werkstattMenue,mathe:matheMenue,deutsch:()=>fachMenue('deutsch'),sach:()=>fachMenue('sach'),englisch:englischMenue,fehler:fehlerUeben,globus:()=>modul('globus'),ms:mittelschulFit,sprachen:()=>modul('sprachen'),freizeit:freizeit,buecher:()=>modul('buecher'),eule:()=>eule()})[b.dataset.go]());
   $('#wechsel').onclick=profilWahl; $('#erw').onclick=erwachsene;
 }
 $('#homeBtn').onclick=()=>home(); $('#kidBtn').onclick=profilWahl;

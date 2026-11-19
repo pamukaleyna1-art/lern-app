@@ -5847,7 +5847,7 @@ Regeln:
 
 (async()=>{
   try{ ai = await window.claude?.use?.('sample'); }catch(e){ ai=null; }
-  if(ai){ fab.classList.add('show'); if(document.getElementById('app').querySelector('.grid')&&!document.getElementById('aiTile')) home(); }
+  if(ai){ fab.classList.add('show'); if(!MODUL&&document.getElementById('app').querySelector('.grid')&&!document.getElementById('aiTile')) home(); }
 })();
 
 async function aiQuiz(k,topic,backFn){
@@ -6061,7 +6061,7 @@ if(MODUL){
   openSubject=function(k){ if((ERLAUBT[MODUL.m]||[]).includes(k)) return _os2(k); zur(); };
   home=function(){ zur(); };
   document.documentElement.classList.add('modul');
-  const START={diktat:()=>diktatMenue(),rechtschreibung:()=>rechtschreibTrainer(),woerterbuch:()=>woerterbuch(),klavier:()=>klavier(),malen:()=>malbrett(),bewegung:()=>bewegungspause(),timer:()=>lernTimer(),englischhoeren:()=>englischHoeren(),globus:()=>globeView(),lexikon:()=>bilderLexikon(),bilderquiz:()=>bilderQuiz(),buecher:()=>_os2('lesen'),wortschatz:()=>wortschatzMenue(),artikel:()=>artikelSeite()};
+  const START={sprachen:()=>sprachenView(),diktat:()=>diktatMenue(),rechtschreibung:()=>rechtschreibTrainer(),woerterbuch:()=>woerterbuch(),klavier:()=>klavier(),malen:()=>malbrett(),bewegung:()=>bewegungspause(),timer:()=>lernTimer(),englischhoeren:()=>englischHoeren(),globus:()=>globeView(),lexikon:()=>bilderLexikon(),bilderquiz:()=>bilderQuiz(),buecher:()=>_os2('lesen'),wortschatz:()=>wortschatzMenue(),artikel:()=>artikelSeite()};
   (START[MODUL.m]||zur)();
 } else home();
 </script>

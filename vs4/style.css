@@ -125,3 +125,9 @@ i.pop{display:block}
 .uhrdreh .mz{transform-box:view-box;transform-origin:100px 100px;animation:spin 6s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .filmbtn{background:linear-gradient(135deg,#f59e0b,#ef4444)!important;color:#fff!important;border:none!important}
+
+.stufen{display:flex;gap:4px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:4px;width:max-content;max-width:100%;margin:0 0 14px auto;overflow-x:auto}
+.stufen button{border:none;background:none;border-radius:999px;padding:9px 14px;font-weight:900;font-size:.95rem;color:var(--ink);white-space:nowrap}
+.stufen .on{background:var(--teal);color:#fff}
+.stufen .spr{background:linear-gradient(135deg,#0e7490,#be185d);color:#fff}
+@media (max-width:480px){.stufen{margin:0 0 14px}.stufen button{padding:8px 10px;font-size:.85rem}}
