@@ -71,7 +71,7 @@ function mcRunde({id,titel,fragen,back,lang,nachher}){
       ${q.bild||''}<div class="q">${esc(q.q)}${spk(q.sag||q.q,q.lang||lang)}</div>
       <div class="opts">${q.order.map((o,j)=>`<button class="opt" data-j="${j}">${esc(o.t)}</button>`).join('')}</div><div class="fb"></div>
       <div class="row" id="wr" style="display:none"><button class="btn" id="weiter">Weiter →</button></div></div>`,back);
-    if(typeof hilfsmittel==='function') hilfsmittel(q.q+' '+q.o.join(' '));
+    if(typeof hilfsmittel==='function') hilfsmittel(q.q);
     app.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
       const p=q.order[+b.dataset.j];const ok=p.idx===q.a;
       app.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(q.order[+x.dataset.j].idx===q.a)x.classList.add('right');});
